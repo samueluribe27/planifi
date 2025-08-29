@@ -24,6 +24,17 @@
   transition: transform 0.3s ease;
 }
 
+/* Overlay para cerrar sidebar en móvil */
+.sidebar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 80;
+}
+
 /*
  * Estilos del Contenido Interno de la Barra Lateral
  * Un contenedor flexbox para organizar los elementos internos verticalmente.
@@ -59,6 +70,17 @@
 .sidebar-nav {
   /* Permite que el contenedor crezca para ocupar el espacio disponible. */
   flex: 1;
+  margin-bottom: 2rem;
+}
+
+/* Títulos de sección */
+.nav-section-title {
+  margin: 0 0 1rem 0;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .nav-list {
@@ -87,6 +109,10 @@
   font-weight: 500;
   transition: all 0.2s ease;
   position: relative;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 0.875rem;
 }
 
 /* Efectos visuales al pasar el cursor sobre los elementos. */
@@ -103,7 +129,7 @@
   box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
 }
 
-/* Seudoelemento para añadir una barra lateral de color en el elemento activo. */
+/* Indicador visual para elementos activos. */
 .nav-item.active::before {
   content: '';
   position: absolute;
@@ -116,100 +142,51 @@
   border-radius: 0 2px 2px 0;
 }
 
+/* Estilos para los iconos de navegación. */
+.nav-icon {
+  font-size: 1.25rem;
+  width: 20px;
+  text-align: center;
+}
+
+/* Estilos para las etiquetas de navegación. */
+.nav-label {
+  font-size: 0.875rem;
+}
+
 /*
- * Estilos para las Secciones de Acciones Rápidas y Pie de Página
+ * Estilos para las Acciones Rápidas
+ * Define la sección de acciones rápidas en la parte inferior del sidebar.
  */
-.quick-actions {
-  margin-top: 2rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid var(--border-color);
-}
-
-.quick-actions h3 {
-  margin: 0 0 1rem 0;
-  font-size: 0.875rem;
-  color: var(--text-secondary);
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.quick-actions-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.quick-action-item {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.5rem 0.75rem;
-  border-radius: 6px;
-  text-decoration: none;
-  color: var(--text-secondary);
-  font-size: 0.875rem;
-  font-weight: 500;
-  transition: all 0.2s ease;
-}
-
-.quick-action-item:hover {
-  background: var(--bg-secondary);
-  color: var(--text-primary);
-  transform: translateX(2px);
-}
-
-.sidebar-footer {
-  /* Empuja el pie de página hacia la parte inferior del contenedor. */
+.sidebar-actions {
   margin-top: auto;
   padding-top: 1.5rem;
   border-top: 1px solid var(--border-color);
 }
 
-/*
- * Estilos de la Sección de Información del Usuario
- */
-.user-info {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.75rem;
-  background: var(--bg-secondary);
-  border-radius: 8px;
-}
-
-.user-avatar {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  overflow: hidden;
-  border: 2px solid var(--border-color);
-}
-
-.user-avatar img {
+/* Estilos específicos para botones de acción */
+.nav-action {
   width: 100%;
-  height: 100%;
-  object-fit: cover;
+  text-align: left;
+}
+
+.nav-action:hover {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  transform: translateX(4px);
 }
 
 /*
  * Diseño Responsivo para Dispositivos Móviles y Tabletas
+ * Ajusta el comportamiento del sidebar en pantallas más pequeñas.
  */
-/* Transforma el sidebar para que no sea visible por defecto en pantallas pequeñas. */
-.sidebar.open {
-  transform: translateX(0);
-}
-
 @media (max-width: 1024px) {
   .sidebar {
     transform: translateX(-100%);
     width: 280px;
   }
   
-  .sidebar.open {
+  .sidebar.sidebar-open {
     transform: translateX(0);
   }
 }
@@ -230,11 +207,11 @@
     padding: 1rem;
   }
   
-  .quick-action-item {
-    padding: 0.75rem;
+  .sidebar-header h2 {
+    font-size: 1rem;
   }
   
-  .user-info {
-    padding: 1rem;
+  .nav-section-title {
+    font-size: 0.75rem;
   }
 }

@@ -103,7 +103,7 @@ const AppContent = () => {
     <div className="app">
       <Header searchRef={searchInputRef} />
       <div className="app-layout">
-        <Sidebar className={sidebarOpen ? 'open' : ''} />
+        <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
         <main className="main-content">
           <Routes>
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
