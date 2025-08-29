@@ -1,16 +1,33 @@
+/*
+ * Estilos del Contenedor Principal de la Barra Lateral
+ * Esta sección define el diseño y posicionamiento de la barra lateral de navegación.
+ */
 .sidebar {
+  /* Fija la barra lateral en la pantalla, asegurando que se mantenga visible al hacer scroll. */
   position: fixed;
+  /* Posiciona el sidebar 70px debajo de la parte superior, dejando espacio para el encabezado. */
   top: 70px;
+  /* Alinea la barra lateral a la izquierda. */
   left: 0;
+  /* Define el ancho de la barra lateral. */
   width: 280px;
+  /* Establece la altura para que ocupe todo el espacio vertical disponible menos la altura del encabezado. */
   height: calc(100vh - 70px);
+  /* Utiliza variables CSS para el color de fondo y el borde. */
   background: var(--bg-primary);
   border-right: 1px solid var(--border-color);
+  /* Permite el scroll vertical si el contenido excede la altura. */
   overflow-y: auto;
+  /* Asegura que la barra lateral se superponga a otros elementos. */
   z-index: 90;
+  /* Añade una transición para animar los cambios de posición, útil para el diseño responsivo. */
   transition: transform 0.3s ease;
 }
 
+/*
+ * Estilos del Contenido Interno de la Barra Lateral
+ * Un contenedor flexbox para organizar los elementos internos verticalmente.
+ */
 .sidebar-content {
   padding: 1.5rem;
   height: 100%;
@@ -18,6 +35,10 @@
   flex-direction: column;
 }
 
+/*
+ * Estilos del Encabezado de la Barra Lateral
+ * Define la sección superior con el título principal del menú.
+ */
 .sidebar-header {
   margin-bottom: 2rem;
   padding-bottom: 1rem;
@@ -31,19 +52,30 @@
   font-weight: 600;
 }
 
+/*
+ * Estilos de la Navegación Principal
+ * Contenedor para la lista de enlaces de navegación.
+ */
 .sidebar-nav {
+  /* Permite que el contenedor crezca para ocupar el espacio disponible. */
   flex: 1;
 }
 
 .nav-list {
+  /* Elimina los estilos predeterminados de la lista. */
   list-style: none;
   margin: 0;
   padding: 0;
+  /* Usa flexbox para una distribución de elementos sencilla. */
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
 }
 
+/*
+ * Estilos de los Elementos de Navegación
+ * Define la apariencia de cada enlace del menú.
+ */
 .nav-item {
   display: flex;
   align-items: center;
@@ -57,18 +89,21 @@
   position: relative;
 }
 
+/* Efectos visuales al pasar el cursor sobre los elementos. */
 .nav-item:hover {
   background: var(--bg-secondary);
   color: var(--text-primary);
   transform: translateX(4px);
 }
 
+/* Estilos para el elemento de navegación que está activo. */
 .nav-item.active {
   background: var(--primary-color);
   color: white;
   box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
 }
 
+/* Seudoelemento para añadir una barra lateral de color en el elemento activo. */
 .nav-item.active::before {
   content: '';
   position: absolute;
@@ -81,16 +116,9 @@
   border-radius: 0 2px 2px 0;
 }
 
-.nav-icon {
-  font-size: 1.25rem;
-  width: 20px;
-  text-align: center;
-}
-
-.nav-label {
-  font-size: 0.875rem;
-}
-
+/*
+ * Estilos para las Secciones de Acciones Rápidas y Pie de Página
+ */
 .quick-actions {
   margin-top: 2rem;
   padding-top: 1.5rem;
@@ -134,22 +162,16 @@
   transform: translateX(2px);
 }
 
-.action-icon {
-  font-size: 1rem;
-  width: 16px;
-  text-align: center;
-}
-
-.action-label {
-  font-size: 0.875rem;
-}
-
 .sidebar-footer {
+  /* Empuja el pie de página hacia la parte inferior del contenedor. */
   margin-top: auto;
   padding-top: 1.5rem;
   border-top: 1px solid var(--border-color);
 }
 
+/*
+ * Estilos de la Sección de Información del Usuario
+ */
 .user-info {
   display: flex;
   align-items: center;
@@ -173,26 +195,10 @@
   object-fit: cover;
 }
 
-.user-details {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-.user-name {
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin: 0;
-}
-
-.user-role {
-  font-size: 0.75rem;
-  color: var(--text-secondary);
-  margin: 0;
-}
-
-/* Mobile sidebar */
+/*
+ * Diseño Responsivo para Dispositivos Móviles y Tabletas
+ */
+/* Transforma el sidebar para que no sea visible por defecto en pantallas pequeñas. */
 .sidebar.open {
   transform: translateX(0);
 }
