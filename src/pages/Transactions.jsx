@@ -17,7 +17,9 @@ const Transactions = () => {
     dateRange: 'all',
     minAmount: '',
     maxAmount: '',
-    searchTerm: ''
+    searchTerm: '',
+    sortBy: 'date',
+    sortOrder: 'desc'
   });
 
   const [showAddForm, setShowAddForm] = useState(false);
@@ -38,6 +40,30 @@ const Transactions = () => {
     if (filters.maxAmount && Math.abs(transaction.amount) > parseFloat(filters.maxAmount)) return false;
     if (filters.searchTerm && !transaction.description.toLowerCase().includes(filters.searchTerm.toLowerCase())) return false;
     return true;
+  }).sort((a, b) => {
+    let aValue, bValue;
+    
+    switch (filters.sortBy) {
+      case 'amount':
+        aValue = Math.abs(a.amount);
+        bValue = Math.abs(b.amount);
+        break;
+      case 'description':
+        aValue = a.description.toLowerCase();
+        bValue = b.description.toLowerCase();
+        break;
+      case 'date':
+      default:
+        aValue = new Date(a.date);
+        bValue = new Date(b.date);
+        break;
+    }
+    
+    if (filters.sortOrder === 'asc') {
+      return aValue > bValue ? 1 : -1;
+    } else {
+      return aValue < bValue ? 1 : -1;
+    }
   });
 
   const handleAddTransaction = (e) => {
@@ -166,15 +192,38 @@ const Transactions = () => {
             />
           </div>
           
-          <div className="filter-group">
-            <label>Buscar</label>
-            <input
-              type="text"
-              value={filters.searchTerm}
-              onChange={(e) => setFilters({...filters, searchTerm: e.target.value})}
-              placeholder="Buscar por descripción..."
-            />
-          </div>
+                     <div className="filter-group">
+             <label>Buscar</label>
+             <input
+               type="text"
+               value={filters.searchTerm}
+               onChange={(e) => setFilters({...filters, searchTerm: e.target.value})}
+               placeholder="Buscar por descripción..."
+             />
+           </div>
+           
+           <div className="filter-group">
+             <label>Ordenar por</label>
+             <select
+               value={filters.sortBy}
+               onChange={(e) => setFilters({...filters, sortBy: e.target.value})}
+             >
+               <option value="date">Fecha</option>
+               <option value="amount">Monto</option>
+               <option value="description">Descripción</option>
+             </select>
+           </div>
+           
+           <div className="filter-group">
+             <label>Orden</label>
+             <select
+               value={filters.sortOrder}
+               onChange={(e) => setFilters({...filters, sortOrder: e.target.value})}
+             >
+               <option value="desc">Descendente</option>
+               <option value="asc">Ascendente</option>
+             </select>
+           </div>
         </div>
       </div>
 
