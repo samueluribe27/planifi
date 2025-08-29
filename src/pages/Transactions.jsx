@@ -181,9 +181,9 @@ const Transactions = () => {
               onChange={(e) => setFilters({...filters, category: e.target.value})}
             >
               <option value="all">Todas</option>
-              {categories.map(category => (
-                <option key={category} value={category}>{category}</option>
-              ))}
+                             {categories.map((category, index) => (
+                 <option key={`${category.name}-${index}`} value={category.name}>{category.name}</option>
+               ))}
             </select>
           </div>
           
@@ -263,8 +263,8 @@ const Transactions = () => {
         </div>
         
         <div className="transactions-table">
-          {filteredTransactions.map(transaction => (
-            <div key={transaction.id} className="transaction-row">
+                     {filteredTransactions.map((transaction, index) => (
+             <div key={`${transaction.id}-${index}`} className="transaction-row">
               <div className="transaction-icon">
                 {getCategoryIcon(transaction.category)}
               </div>
@@ -346,9 +346,11 @@ const Transactions = () => {
                   value={newTransaction.category}
                   onChange={(e) => setNewTransaction({...newTransaction, category: e.target.value})}
                 >
-                  {categories.map(category => (
-                    <option key={category.name} value={category.name}>{category.name}</option>
-                  ))}
+                                     {categories.map((category, index) => (
+                     <option key={`${category.name}-${index}`} value={category.name}>
+                       {category.name}
+                     </option>
+                   ))}
                 </select>
               </div>
               

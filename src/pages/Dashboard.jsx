@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAppContext } from '../context/AppContext';
-import { formatCurrency, getTransactionIcon } from '../utils/formatters';
+import { formatCurrency, getCategoryIcon } from '../utils/formatters';
 import './Dashboard.css';
 
 const Dashboard = () => {
@@ -126,10 +126,10 @@ const Dashboard = () => {
             </div>
             
             <div className="transactions-list">
-              {recentTransactions.map((transaction) => (
-                <div key={transaction.id} className="transaction-item">
+                             {recentTransactions.map((transaction, index) => (
+                                 <div key={`${transaction.id}-${index}`} className="transaction-item">
                   <div className="transaction-icon">
-                    {getTransactionIcon(transaction.category)}
+                    {getCategoryIcon(transaction.category)}
                   </div>
                   <div className="transaction-details">
                     <h4>{transaction.description}</h4>

@@ -197,6 +197,6 @@ const SearchBar = forwardRef((props, ref) => {
       )}
     </div>
   );
-};
+});
 
 export default SearchBar;

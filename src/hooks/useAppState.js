@@ -242,7 +242,7 @@ export const useAppState = () => {
   const addTransaction = (transaction) => {
     const newTransaction = {
       ...transaction,
-      id: Date.now(),
+      id: Date.now() + Math.random(),
       date: transaction.date || new Date().toISOString().split('T')[0]
     };
     
@@ -271,7 +271,7 @@ export const useAppState = () => {
   const addBudget = (budget) => {
     const newBudget = {
       ...budget,
-      id: Date.now(),
+      id: Date.now() + Math.random(),
       spent: budget.spent || 0
     };
     
@@ -300,7 +300,7 @@ export const useAppState = () => {
   const addGoal = (goal) => {
     const newGoal = {
       ...goal,
-      id: Date.now(),
+      id: Date.now() + Math.random(),
       saved: goal.saved || 0
     };
     
@@ -329,7 +329,7 @@ export const useAppState = () => {
   const addCategory = (category) => {
     const newCategory = {
       ...category,
-      id: Date.now()
+      id: Date.now() + Math.random()
     };
     
     setState(prev => ({

@@ -43,23 +43,11 @@ export const memoize = (fn) => {
 
 // Función para lazy loading de componentes
 export const lazyLoad = (importFunc) => {
-  return React.lazy(() => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(importFunc());
-      }, 100);
-    });
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(importFunc());
+    }, 100);
   });
-};
-
-// Función para optimizar re-renders
-export const useMemoizedCallback = (callback, deps) => {
-  return React.useCallback(callback, deps);
-};
-
-// Función para optimizar cálculos costosos
-export const useMemoizedValue = (value, deps) => {
-  return React.useMemo(() => value, deps);
 };
 
 // Función para limpiar localStorage periódicamente

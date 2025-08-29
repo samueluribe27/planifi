@@ -105,12 +105,12 @@ const Budget = () => {
         </div>
         
         <div className="categories-grid">
-          {budgets.map(budget => {
+                      {budgets.map((budget, index) => {
             const percentage = (budget.spent / budget.budget) * 100;
             const remaining = budget.budget - budget.spent;
             
             return (
-              <div key={budget.id} className="budget-card">
+              <div key={`${budget.id}-${index}`} className="budget-card">
                 <div className="budget-header">
                   <div className="category-info">
                     <span className="category-icon">{budget.icon}</span>
@@ -188,8 +188,8 @@ const Budget = () => {
                   required
                 >
                   <option value="">Selecciona una categoría</option>
-                  {categories.map(category => (
-                    <option key={category.name} value={category.name}>{category.name}</option>
+                  {categories.map((category, index) => (
+                                          <option key={`${category.name}-${index}`} value={category.name}>{category.name}</option>
                   ))}
                 </select>
               </div>

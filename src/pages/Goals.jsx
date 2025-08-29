@@ -165,7 +165,7 @@ const Goals = () => {
         </div>
         
         <div className="goals-grid">
-          {goals.map(goal => {
+          {goals.map((goal, index) => {
             const progress = calculateProgress(goal.saved, goal.target);
             const daysRemaining = calculateDaysRemaining(goal.deadline);
             const statusColor = getStatusColor(progress, daysRemaining);
@@ -173,7 +173,7 @@ const Goals = () => {
             const priorityInfo = getPriorityInfo(goal.priority);
             
             return (
-              <div key={goal.id} className="goal-card">
+              <div key={`${goal.id}-${index}`} className="goal-card">
                 <div className="goal-header">
                   <div className="goal-info">
                     <span className="goal-icon">{goal.icon}</span>

@@ -29,7 +29,7 @@ const AppContent = () => {
     setSidebarOpen(!sidebarOpen);
   };
 
-  // Inicializar tema y optimizaciones
+  // Inicializar tema
   useEffect(() => {
     initTheme();
     
