@@ -1,27 +1,23 @@
 /*
- * Estilos del Contenedor Principal de la Barra Lateral
- * Esta sección define el diseño y posicionamiento de la barra lateral de navegación.
+ * Mobile-first sidebar styles
  */
 .sidebar {
-  /* Fija la barra lateral en la pantalla, asegurando que se mantenga visible al hacer scroll. */
   position: fixed;
-  /* Posiciona el sidebar 70px debajo de la parte superior, dejando espacio para el encabezado. */
-  top: 70px;
-  /* Alinea la barra lateral a la izquierda. */
+  top: var(--header-height);
   left: 0;
-  /* Define el ancho de la barra lateral. */
-  width: 280px;
-  /* Establece la altura para que ocupe todo el espacio vertical disponible menos la altura del encabezado. */
-  height: calc(100vh - 70px);
-  /* Utiliza variables CSS para el color de fondo y el borde. */
+  width: 100%;
+  height: calc(100vh - var(--header-height));
   background: var(--bg-primary);
   border-right: 1px solid var(--border-color);
-  /* Permite el scroll vertical si el contenido excede la altura. */
   overflow-y: auto;
-  /* Asegura que la barra lateral se superponga a otros elementos. */
   z-index: 90;
-  /* Añade una transición para animar los cambios de posición, útil para el diseño responsivo. */
+  transform: translateX(-100%);
   transition: transform 0.3s ease;
+  box-shadow: var(--shadow-lg);
+}
+
+.sidebar.sidebar-open {
+  transform: translateX(0);
 }
 
 /* Overlay para cerrar sidebar en móvil */
@@ -33,14 +29,21 @@
   height: 100%;
   background: rgba(0, 0, 0, 0.5);
   z-index: 80;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+}
+
+.sidebar.sidebar-open + .sidebar-overlay {
+  opacity: 1;
+  visibility: visible;
 }
 
 /*
  * Estilos del Contenido Interno de la Barra Lateral
- * Un contenedor flexbox para organizar los elementos internos verticalmente.
  */
 .sidebar-content {
-  padding: 1.5rem;
+  padding: var(--mobile-padding);
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -48,10 +51,9 @@
 
 /*
  * Estilos del Encabezado de la Barra Lateral
- * Define la sección superior con el título principal del menú.
  */
 .sidebar-header {
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
   padding-bottom: 1rem;
   border-bottom: 1px solid var(--border-color);
 }
@@ -65,12 +67,10 @@
 
 /*
  * Estilos de la Navegación Principal
- * Contenedor para la lista de enlaces de navegación.
  */
 .sidebar-nav {
-  /* Permite que el contenedor crezca para ocupar el espacio disponible. */
   flex: 1;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
 }
 
 /* Títulos de sección */
@@ -84,11 +84,9 @@
 }
 
 .nav-list {
-  /* Elimina los estilos predeterminados de la lista. */
   list-style: none;
   margin: 0;
   padding: 0;
-  /* Usa flexbox para una distribución de elementos sencilla. */
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
@@ -96,14 +94,13 @@
 
 /*
  * Estilos de los Elementos de Navegación
- * Define la apariencia de cada enlace del menú.
  */
 .nav-item {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  padding: 0.75rem 1rem;
-  border-radius: 8px;
+  padding: 0.875rem 1rem;
+  border-radius: var(--mobile-border-radius);
   text-decoration: none;
   color: var(--text-secondary);
   font-weight: 500;
@@ -113,23 +110,22 @@
   background: none;
   cursor: pointer;
   font-size: 0.875rem;
+  min-height: 44px;
+  touch-action: manipulation;
 }
 
-/* Efectos visuales al pasar el cursor sobre los elementos. */
 .nav-item:hover {
   background: var(--bg-secondary);
   color: var(--text-primary);
   transform: translateX(4px);
 }
 
-/* Estilos para el elemento de navegación que está activo. */
 .nav-item.active {
   background: var(--primary-color);
   color: white;
   box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
 }
 
-/* Indicador visual para elementos activos. */
 .nav-item.active::before {
   content: '';
   position: absolute;
@@ -142,21 +138,20 @@
   border-radius: 0 2px 2px 0;
 }
 
-/* Estilos para los iconos de navegación. */
 .nav-icon {
   font-size: 1.25rem;
   width: 20px;
   text-align: center;
+  flex-shrink: 0;
 }
 
-/* Estilos para las etiquetas de navegación. */
 .nav-label {
   font-size: 0.875rem;
+  flex: 1;
 }
 
 /*
  * Estilos para las Acciones Rápidas
- * Define la sección de acciones rápidas en la parte inferior del sidebar.
  */
 .sidebar-actions {
   margin-top: auto;
@@ -164,7 +159,6 @@
   border-top: 1px solid var(--border-color);
 }
 
-/* Estilos específicos para botones de acción */
 .nav-action {
   width: 100%;
   text-align: left;
@@ -177,41 +171,89 @@
 }
 
 /*
- * Diseño Responsivo para Dispositivos Móviles y Tabletas
- * Ajusta el comportamiento del sidebar en pantallas más pequeñas.
+ * Responsive breakpoints
  */
-@media (max-width: 1024px) {
+@media (min-width: 640px) {
   .sidebar {
-    transform: translateX(-100%);
-    width: 280px;
+    width: 320px;
   }
   
-  .sidebar.sidebar-open {
-    transform: translateX(0);
+  .sidebar-content {
+    padding: 1.5rem;
+  }
+  
+  .nav-item {
+    padding: 1rem 1.25rem;
   }
 }
 
-@media (max-width: 768px) {
+@media (min-width: 768px) {
   .sidebar {
-    top: 60px;
-    height: calc(100vh - 60px);
-    width: 100%;
-    max-width: 320px;
+    width: var(--sidebar-width);
+  }
+  
+  .sidebar-content {
+    padding: 2rem;
+  }
+  
+  .sidebar-header h2 {
+    font-size: 1.25rem;
+  }
+  
+  .nav-section-title {
+    font-size: 1rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .sidebar {
+    transform: translateX(0); /* Siempre visible en desktop */
+    box-shadow: none;
+  }
+  
+  .sidebar-overlay {
+    display: none; /* No overlay en desktop */
+  }
+}
+
+/* Landscape mobile adjustments */
+@media (max-height: 500px) and (orientation: landscape) {
+  .sidebar {
+    top: 50px;
+    height: calc(100vh - 50px);
   }
   
   .sidebar-content {
     padding: 1rem;
   }
   
+  .sidebar-header {
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+  }
+  
   .nav-item {
-    padding: 1rem;
+    padding: 0.75rem 1rem;
+    min-height: 40px;
   }
   
-  .sidebar-header h2 {
-    font-size: 1rem;
+  .nav-icon {
+    font-size: 1.125rem;
+  }
+}
+
+/* Touch-friendly improvements */
+@media (hover: none) and (pointer: coarse) {
+  .nav-item {
+    padding: 1rem 1.25rem;
+    min-height: 48px;
   }
   
-  .nav-section-title {
-    font-size: 0.75rem;
+  .nav-item:hover {
+    transform: none; /* Sin transform en touch */
+  }
+  
+  .nav-action:hover {
+    transform: none;
   }
 }

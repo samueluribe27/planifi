@@ -1,3 +1,4 @@
+/* Mobile-first layout */
 .app {
   min-height: 100vh;
   background: var(--bg-secondary);
@@ -8,22 +9,25 @@
 .app-layout {
   display: flex;
   flex: 1;
-  margin-top: 70px;
+  margin-top: var(--header-height);
+  position: relative;
 }
 
 .main-content {
   flex: 1;
-  margin-left: 280px;
-  min-height: calc(100vh - 70px);
+  margin-left: 0; /* En móvil no hay sidebar visible */
+  min-height: calc(100vh - var(--header-height));
   background: var(--bg-secondary);
   transition: margin-left 0.3s ease;
+  padding: var(--mobile-padding);
+  overflow-x: hidden;
 }
 
 /* Mobile menu toggle button */
 .mobile-menu-toggle {
   position: fixed;
-  bottom: 2rem;
-  right: 2rem;
+  bottom: 1rem;
+  right: 1rem;
   width: 56px;
   height: 56px;
   border-radius: 50%;
@@ -34,14 +38,15 @@
   cursor: pointer;
   box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
   z-index: 1000;
-  display: none;
+  display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.2s ease;
+  touch-action: manipulation;
 }
 
 .mobile-menu-toggle:hover {
-  background: var(--primary-dark);
+  background: var(--primary-hover);
   transform: scale(1.05);
   box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
 }
@@ -76,8 +81,30 @@
   bottom: -6px;
 }
 
-/* Responsive */
-@media (max-width: 1024px) {
+/* Responsive breakpoints */
+@media (min-width: 768px) {
+  .main-content {
+    padding: 1.5rem;
+  }
+  
+  .mobile-menu-toggle {
+    bottom: 2rem;
+    right: 2rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .main-content {
+    margin-left: var(--sidebar-width); /* Sidebar visible en desktop */
+  }
+  
+  .mobile-menu-toggle {
+    display: none; /* Ocultar en desktop */
+  }
+}
+
+/* Tablet adjustments */
+@media (min-width: 768px) and (max-width: 1023px) {
   .main-content {
     margin-left: 0;
   }
@@ -87,28 +114,27 @@
   }
 }
 
-@media (max-width: 768px) {
-  .app-layout {
-    margin-top: 60px;
-  }
-  
-  .main-content {
-    min-height: calc(100vh - 60px);
-  }
-  
+/* Landscape mobile adjustments */
+@media (max-height: 500px) and (orientation: landscape) {
   .mobile-menu-toggle {
-    bottom: 1.5rem;
-    right: 1.5rem;
+    bottom: 0.5rem;
+    right: 0.5rem;
     width: 48px;
     height: 48px;
   }
   
-  .hamburger {
-    width: 18px;
-  }
-  
+  .hamburger,
   .hamburger::before,
   .hamburger::after {
     width: 18px;
   }
+  
+  .hamburger::before {
+    top: -5px;
+  }
+  
+  .hamburger::after {
+    bottom: -5px;
+  }
 }
+
