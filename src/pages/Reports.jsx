@@ -1,7 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useAppContext } from '../context/AppContext';
 import { formatCurrency, formatPercentage, formatDate } from '../utils/formatters';
 import { exportTransactionsToCSV, exportBudgetsToCSV, exportGoalsToCSV, exportFinancialReport } from '../utils/exportUtils';
+import Chart from '../components/Chart';
+import {
+  generateLineChartData,
+  generateDoughnutChartData,
+  generateBarChartData,
+  generateGoalsProgressData,
+  generateFinancialSummary,
+  generateTrendStats,
+  formatChartData,
+  generateChartOptions
+} from '../utils/chartUtils';
 import './Reports.css';
 
 const Reports = () => {
@@ -63,6 +74,25 @@ const Reports = () => {
   const totalSavings = getTotalSavings();
   const savingsRate = totalIncome > 0 ? (totalSavings / totalIncome) * 100 : 0;
   const topCategories = getTopExpenseCategories();
+
+  // Generar datos de gráficos usando useMemo para optimización
+  const chartData = useMemo(() => {
+    const lineData = generateLineChartData(transactions, selectedPeriod);
+    const doughnutData = generateDoughnutChartData(transactions, 'category');
+    const barData = generateBarChartData(transactions, budgets);
+    const goalsData = generateGoalsProgressData(goals);
+    const summary = generateFinancialSummary(transactions, budgets, goals);
+    const trends = generateTrendStats(transactions, selectedPeriod);
+
+    return {
+      lineData,
+      doughnutData,
+      barData,
+      goalsData,
+      summary,
+      trends
+    };
+  }, [transactions, budgets, goals, selectedPeriod]);
 
   const reportData = {
     overview: {
@@ -376,6 +406,73 @@ const Reports = () => {
 
       <div className="reports-content">
         {renderReportContent()}
+      </div>
+
+      {/* Sección de gráficos */}
+      <div className="charts-section">
+        <h2>Visualizaciones</h2>
+        
+        <div className="charts-grid">
+          <div className="chart-card">
+            <Chart
+              type="line"
+              data={formatChartData(chartData.lineData, 'line')}
+              options={generateChartOptions('line', 'Tendencia de Ingresos y Gastos')}
+              title="Tendencia Financiera"
+              height={300}
+            />
+          </div>
+          
+          <div className="chart-card">
+            <Chart
+              type="doughnut"
+              data={formatChartData(chartData.doughnutData, 'doughnut')}
+              options={generateChartOptions('doughnut', 'Distribución por Categoría')}
+              title="Gastos por Categoría"
+              height={300}
+            />
+          </div>
+          
+          <div className="chart-card">
+            <Chart
+              type="bar"
+              data={formatChartData(chartData.barData, 'bar')}
+              options={generateChartOptions('bar', 'Presupuesto vs Gastado')}
+              title="Presupuesto vs Real"
+              height={300}
+            />
+          </div>
+          
+          <div className="chart-card">
+            <div className="goals-progress-chart">
+              <h3>Progreso de Metas</h3>
+              <div className="goals-list">
+                {chartData.goalsData.map((goal, index) => (
+                  <div key={index} className="goal-progress-item">
+                    <div className="goal-info">
+                      <span className="goal-title">{goal.title}</span>
+                      <span className="goal-amount">
+                        {formatCurrency(goal.saved)} / {formatCurrency(goal.target)}
+                      </span>
+                    </div>
+                    <div className="goal-progress-bar">
+                      <div 
+                        className="goal-progress-fill"
+                        style={{ 
+                          width: `${Math.min(goal.percentage, 100)}%`,
+                          backgroundColor: goal.color
+                        }}
+                      ></div>
+                    </div>
+                    <span className="goal-percentage">
+                      {formatPercentage(goal.percentage)}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
