@@ -84,7 +84,11 @@ const Goals = () => {
   };
 
   const handleUpdateProgress = (id, newAmount) => {
-    updateGoal(id, { saved: Math.min(newAmount, goals.find(g => g.id === id)?.target || 0) });
+    const goal = goals.find(g => g.id === id);
+    if (goal) {
+      const updatedAmount = Math.min(newAmount, goal.target);
+      updateGoal(id, { saved: updatedAmount });
+    }
   };
 
   const getGoalIcon = (category) => {
@@ -230,19 +234,28 @@ const Goals = () => {
                     </span>
                   </div>
                   
-                  <div className="update-progress">
-                    <input
-                      type="number"
-                      placeholder="Actualizar progreso"
-                      min="0"
-                      max={goal.target}
-                      step="1000"
-                      onChange={(e) => handleUpdateProgress(goal.id, parseFloat(e.target.value) || 0)}
-                    />
-                    <button className="btn btn-secondary btn-sm">
-                      Actualizar
-                    </button>
-                  </div>
+                                     <div className="update-progress">
+                     <input
+                       type="number"
+                       placeholder="Actualizar progreso"
+                       min="0"
+                       max={goal.target}
+                       step="1000"
+                       onChange={(e) => handleUpdateProgress(goal.id, parseFloat(e.target.value) || 0)}
+                     />
+                     <button 
+                       className="btn btn-secondary btn-sm"
+                       onClick={() => {
+                         const input = document.querySelector(`input[placeholder="Actualizar progreso"]`);
+                         if (input) {
+                           handleUpdateProgress(goal.id, parseFloat(input.value) || 0);
+                           input.value = '';
+                         }
+                       }}
+                     >
+                       Actualizar
+                     </button>
+                   </div>
                 </div>
               </div>
             );
