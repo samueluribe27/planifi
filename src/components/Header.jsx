@@ -1,29 +1,57 @@
 import React from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import './Header.css';
 
 const Header = () => {
+  const location = useLocation();
+
+  const isActive = (path) => {
+    return location.pathname === path;
+  };
+
   return (
     <header className="header">
-      <div className="container">
-        <div className="header-content">
-          <div className="logo">
-            <h1>Planifi</h1>
-            <span className="logo-subtitle">Finanzas Personales</span>
+      <div className="header-content">
+        <div className="logo">
+          <Link to="/dashboard">
+            <h1>Planifi Finanzas Personales</h1>
+          </Link>
+        </div>
+        
+        <nav className="nav-menu">
+          <Link 
+            to="/dashboard" 
+            className={`nav-link ${isActive('/dashboard') ? 'active' : ''}`}
+          >
+            Dashboard
+          </Link>
+          <Link 
+            to="/transactions" 
+            className={`nav-link ${isActive('/transactions') ? 'active' : ''}`}
+          >
+            Transacciones
+          </Link>
+          <Link 
+            to="/budget" 
+            className={`nav-link ${isActive('/budget') ? 'active' : ''}`}
+          >
+            Presupuesto
+          </Link>
+          <Link 
+            to="/goals" 
+            className={`nav-link ${isActive('/goals') ? 'active' : ''}`}
+          >
+            Metas
+          </Link>
+        </nav>
+        
+        <div className="user-section">
+          <div className="user-info">
+            <span className="user-name">Juan Pérez</span>
+            <span className="user-email">juan@example.com</span>
           </div>
-          
-          <nav className="nav">
-            <ul className="nav-list">
-              <li><a href="#dashboard" className="nav-link active">Dashboard</a></li>
-              <li><a href="#transactions" className="nav-link">Transacciones</a></li>
-              <li><a href="#budget" className="nav-link">Presupuesto</a></li>
-              <li><a href="#goals" className="nav-link">Metas</a></li>
-            </ul>
-          </nav>
-          
-          <div className="user-menu">
-            <button className="user-avatar">
-              <span>JS</span>
-            </button>
+          <div className="user-avatar">
+            <img src="https://via.placeholder.com/40x40/3B82F6/FFFFFF?text=JP" alt="Usuario" />
           </div>
         </div>
       </div>
