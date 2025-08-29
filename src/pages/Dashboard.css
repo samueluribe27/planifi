@@ -24,7 +24,7 @@
 /* Metrics Grid */
 .metrics-grid {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: repeat(2, 1fr);
   gap: 1rem;
   margin-bottom: 2rem;
 }
@@ -38,16 +38,10 @@
   display: flex;
   align-items: center;
   gap: 1rem;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.metric-card:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
 }
 
 .metric-icon {
-  font-size: 2rem;
+  font-size: 1.5rem;
   width: 48px;
   height: 48px;
   display: flex;
@@ -68,13 +62,13 @@
 }
 
 .metric-icon.savings {
-  background: rgba(34, 197, 94, 0.1);
-  color: #22c55e;
+  background: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
 }
 
 .metric-icon.balance {
-  background: rgba(34, 197, 94, 0.1);
-  color: #22c55e;
+  background: rgba(245, 158, 11, 0.1);
+  color: #f59e0b;
 }
 
 .metric-content {
@@ -83,41 +77,27 @@
 }
 
 .metric-content h3 {
+  margin: 0 0 0.25rem 0;
   font-size: 0.875rem;
-  font-weight: 600;
   color: var(--text-secondary);
-  margin: 0 0 0.5rem 0;
+  font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
 .metric-value {
-  font-size: 1.5rem;
+  margin: 0;
+  font-size: 1.25rem;
   font-weight: 700;
   color: var(--text-primary);
-  margin: 0 0 0.25rem 0;
-  line-height: 1.2;
-}
-
-.metric-change {
-  font-size: 0.75rem;
-  font-weight: 500;
-  display: block;
-}
-
-.metric-change.positive {
-  color: #22c55e;
-}
-
-.metric-change.negative {
-  color: #ef4444;
+  word-break: break-word;
 }
 
 /* Content Grid */
 .content-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 1.5rem;
+  gap: 2rem;
 }
 
 .recent-transactions-card,
@@ -131,10 +111,12 @@
 
 .recent-transactions-card h3,
 .budget-progress-card h3 {
-  font-size: 1rem;
-  font-weight: 600;
+  margin: 0 0 1.5rem 0;
+  font-size: 1.125rem;
   color: var(--text-primary);
-  margin: 0 0 1rem 0;
+  font-weight: 600;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border-color);
 }
 
 /* Transactions List */
@@ -148,7 +130,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.75rem;
+  padding: 1rem;
   background: var(--bg-secondary);
   border-radius: 8px;
   transition: background-color 0.2s ease;
@@ -159,25 +141,43 @@
 }
 
 .transaction-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.transaction-main {
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
+  margin-bottom: 0.5rem;
 }
 
 .transaction-title {
   font-size: 0.875rem;
   font-weight: 600;
   color: var(--text-primary);
+  word-break: break-word;
+}
+
+.transaction-date {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
 }
 
 .transaction-category {
   font-size: 0.75rem;
   color: var(--text-secondary);
+  background: var(--bg-primary);
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  display: inline-block;
 }
 
 .transaction-amount {
   font-size: 0.875rem;
   font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .transaction-amount.income {
@@ -196,55 +196,73 @@
 }
 
 .budget-item {
-  padding: 1rem;
   background: var(--bg-secondary);
   border-radius: 8px;
-  transition: background-color 0.2s ease;
-}
-
-.budget-item:hover {
-  background: var(--border-color);
+  padding: 1rem;
+  border: 1px solid var(--border-color);
 }
 
 .budget-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.75rem;
+  gap: 1rem;
 }
 
 .budget-category {
   font-size: 0.875rem;
   font-weight: 600;
   color: var(--text-primary);
+  word-break: break-word;
 }
 
 .budget-amount {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.budget-progress {
+  position: relative;
+  margin-bottom: 0.5rem;
+}
+
+.budget-progress-fill {
+  height: 6px;
+  background: linear-gradient(90deg, #22c55e, #16a34a);
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.budget-percentage {
   font-size: 0.75rem;
   color: var(--text-secondary);
   font-weight: 500;
 }
 
-.budget-progress {
-  width: 100%;
-  height: 8px;
-  background: var(--border-color);
-  border-radius: 4px;
-  overflow: hidden;
-  position: relative;
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 2rem 1rem;
+  color: var(--text-secondary);
 }
 
-.budget-progress-fill {
-  height: 100%;
-  background: linear-gradient(90deg, #22c55e, #16a34a);
-  border-radius: 4px;
-  transition: width 0.3s ease;
+.empty-state p {
+  margin: 0;
+  font-size: 0.875rem;
 }
 
 /* Responsive breakpoints */
 @media (min-width: 640px) {
   .metrics-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  
+  .content-grid {
     grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
   }
 }
 
@@ -262,11 +280,12 @@
   }
   
   .metric-value {
-    font-size: 1.75rem;
+    font-size: 1.5rem;
   }
   
-  .content-grid {
-    grid-template-columns: repeat(2, 1fr);
+  .recent-transactions-card,
+  .budget-progress-card {
+    padding: 2rem;
   }
 }
 
@@ -275,8 +294,8 @@
     grid-template-columns: repeat(4, 1fr);
   }
   
-  .metric-value {
-    font-size: 2rem;
+  .content-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
@@ -296,24 +315,66 @@
     padding: 1rem;
   }
   
-  .metric-icon {
-    font-size: 1.5rem;
-    width: 40px;
-    height: 40px;
-  }
-  
   .metric-value {
-    font-size: 1.25rem;
+    font-size: 1.125rem;
   }
   
   .content-grid {
     gap: 1rem;
   }
+  
+  .recent-transactions-card,
+  .budget-progress-card {
+    padding: 1rem;
+  }
 }
 
 /* Touch-friendly improvements */
 @media (hover: none) and (pointer: coarse) {
-  .metric-card:hover {
-    transform: none;
+  .transaction-item {
+    min-height: 60px;
+  }
+  
+  .budget-item {
+    min-height: 80px;
+  }
+  
+  .metric-card {
+    min-height: 80px;
+  }
+}
+
+/* Mobile-specific optimizations */
+@media (max-width: 480px) {
+  .metric-card {
+    padding: 1rem;
+  }
+  
+  .metric-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 1.25rem;
+  }
+  
+  .metric-value {
+    font-size: 1.125rem;
+  }
+  
+  .transaction-item {
+    padding: 0.75rem;
+  }
+  
+  .budget-item {
+    padding: 0.75rem;
+  }
+  
+  .budget-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .budget-amount {
+    align-self: flex-end;
   }
 }

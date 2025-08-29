@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAppContext } from '../context/AppContext';
-import { formatCurrency, formatDate } from '../utils/formatters';
+import { formatCurrency, formatDate, createLocalDate, localDateToISO } from '../utils/formatters';
 import { showSuccess, showError, showConfirmation } from '../utils/notifications';
 import { exportTransactionsToCSV } from '../utils/exportUtils';
 import './Transactions.css';
@@ -24,7 +24,7 @@ const Transactions = () => {
     amount: '',
     type: 'expense',
     category: '',
-    date: new Date().toISOString().split('T')[0],
+    date: createLocalDate(), // Usar la nueva función
     description: ''
   });
 
@@ -77,7 +77,8 @@ const Transactions = () => {
 
     const transaction = {
       ...formData,
-      amount: formData.type === 'expense' ? -Math.abs(parseFloat(formData.amount)) : Math.abs(parseFloat(formData.amount))
+      amount: formData.type === 'expense' ? -Math.abs(parseFloat(formData.amount)) : Math.abs(parseFloat(formData.amount)),
+      date: localDateToISO(formData.date) // Convertir a ISO string preservando la fecha local
     };
 
     addTransaction(transaction);
@@ -86,7 +87,7 @@ const Transactions = () => {
       amount: '',
       type: 'expense',
       category: '',
-      date: new Date().toISOString().split('T')[0],
+      date: createLocalDate(), // Usar la nueva función
       description: ''
     });
     setShowForm(false);

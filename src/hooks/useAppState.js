@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { localDateToISO } from '../utils/formatters';
 
 const initialState = {
   user: {
@@ -142,10 +143,31 @@ export const useAppState = () => {
       id: Date.now() + Math.random(),
       date: transaction.date || new Date().toISOString()
     };
-    setState(prev => ({
-      ...prev,
-      transactions: [...prev.transactions, newTransaction]
-    }));
+    
+    setState(prev => {
+      // Actualizar transacciones
+      const updatedTransactions = [...prev.transactions, newTransaction];
+      
+      // Actualizar presupuestos si es un gasto
+      let updatedBudgets = [...prev.budgets];
+      if (newTransaction.type === 'expense') {
+        updatedBudgets = prev.budgets.map(budget => {
+          if (budget.category === newTransaction.category) {
+            return {
+              ...budget,
+              spent: budget.spent + Math.abs(newTransaction.amount)
+            };
+          }
+          return budget;
+        });
+      }
+      
+      return {
+        ...prev,
+        transactions: updatedTransactions,
+        budgets: updatedBudgets
+      };
+    });
   };
 
   const updateTransaction = (id, updates) => {

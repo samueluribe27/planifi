@@ -1,23 +1,25 @@
 import React, { useState } from 'react';
 import { useAppContext } from '../context/AppContext';
-import { formatCurrency, formatPercentage, formatDate } from '../utils/formatters';
+import { formatCurrency, formatPercentage, formatDate, getCategoryIcon } from '../utils/formatters';
+import { showSuccess, showError, showConfirmation } from '../utils/notifications';
 import './Goals.css';
 
 const Goals = () => {
   const { goals, addGoal, deleteGoal, updateGoal, categories } = useAppContext();
 
-  const [showAddForm, setShowAddForm] = useState(false);
-  const [newGoal, setNewGoal] = useState({
+  const [showForm, setShowForm] = useState(false);
+  const [formData, setFormData] = useState({
     title: '',
     description: '',
-    targetAmount: '',
-    currentAmount: '0',
+    target: '',
+    saved: '0',
     deadline: '',
-    category: 'Ahorro',
+    category: '',
     priority: 'medium'
   });
 
-
+  // Estado para manejar las actualizaciones de progreso
+  const [progressUpdates, setProgressUpdates] = useState({});
 
   const priorities = [
     { value: 'low', label: 'Baja', color: 'success' },
@@ -56,31 +58,40 @@ const Goals = () => {
     return 'En progreso';
   };
 
-  const handleAddGoal = (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    const goal = {
-      ...newGoal,
-      target: parseFloat(newGoal.targetAmount),
-      saved: parseFloat(newGoal.currentAmount) || 0,
-      icon: getGoalIcon(newGoal.category),
-      color: '#3B82F6'
-    };
     
+    if (!formData.title || !formData.target || !formData.category || !formData.deadline) {
+      showError('Por favor completa todos los campos requeridos');
+      return;
+    }
+
+    const goal = {
+      ...formData,
+      target: parseFloat(formData.target),
+      saved: parseFloat(formData.saved) || 0
+    };
+
     addGoal(goal);
-    setNewGoal({
+    setFormData({
       title: '',
       description: '',
-      targetAmount: '',
-      currentAmount: '0',
+      target: '',
+      saved: '0',
       deadline: '',
-      category: 'Ahorro',
+      category: '',
       priority: 'medium'
     });
-    setShowAddForm(false);
+    setShowForm(false);
+    showSuccess('Meta agregada exitosamente');
   };
 
-  const handleDeleteGoal = (id) => {
-    deleteGoal(id);
+  const handleDelete = async (id) => {
+    const confirmed = await showConfirmation('¿Estás seguro de que quieres eliminar esta meta?');
+    if (confirmed) {
+      deleteGoal(id);
+      showSuccess('Meta eliminada exitosamente');
+    }
   };
 
   const handleUpdateProgress = (id, newAmount) => {
@@ -88,22 +99,27 @@ const Goals = () => {
     if (goal) {
       const updatedAmount = Math.min(newAmount, goal.target);
       updateGoal(id, { saved: updatedAmount });
+      showSuccess('Progreso actualizado');
     }
   };
 
-  const getGoalIcon = (category) => {
-    const icons = {
-      'Ahorro': '💰',
-      'Viajes': '✈️',
-      'Vivienda': '🏠',
-      'Educación': '📚',
-      'Inversiones': '📈',
-      'Negocio': '💼',
-      'Salud': '🏥',
-      'Entretenimiento': '🎮',
-      'Otros': '🎯'
-    };
-    return icons[category] || '🎯';
+  const handleProgressInputChange = (goalId, value) => {
+    setProgressUpdates(prev => ({
+      ...prev,
+      [goalId]: value
+    }));
+  };
+
+  const handleProgressSubmit = (goalId) => {
+    const value = progressUpdates[goalId];
+    if (value !== undefined && value !== '') {
+      handleUpdateProgress(goalId, parseFloat(value) || 0);
+      setProgressUpdates(prev => {
+        const newUpdates = { ...prev };
+        delete newUpdates[goalId];
+        return newUpdates;
+      });
+    }
   };
 
   const totalGoals = goals.length;
@@ -113,203 +129,117 @@ const Goals = () => {
   const overallProgress = totalTargetAmount > 0 ? (totalCurrentAmount / totalTargetAmount) * 100 : 0;
 
   return (
-    <div className="goals-page">
+    <div className="goals">
       <div className="goals-header">
-        <div className="page-title">
+        <div className="goals-title">
           <h1>Metas Financieras</h1>
           <p>Define y alcanza tus objetivos financieros</p>
         </div>
         
-        <div className="header-actions">
+        <div className="goals-actions">
           <button 
             className="btn btn-primary"
-            onClick={() => setShowAddForm(true)}
+            onClick={() => setShowForm(true)}
           >
-            + Nueva Meta
+            ➕ Nueva Meta
           </button>
         </div>
       </div>
 
-      <div className="goals-overview">
-        <div className="overview-card total-goals">
+      {/* Resumen de metas */}
+      <div className="goals-summary">
+        <div className="summary-card">
           <h3>Total Metas</h3>
           <p>{totalGoals}</p>
         </div>
-        <div className="overview-card completed-goals">
+        <div className="summary-card">
           <h3>Completadas</h3>
           <p>{completedGoals}</p>
         </div>
-        <div className="overview-card total-target">
+        <div className="summary-card">
           <h3>Meta Total</h3>
           <p>{formatCurrency(totalTargetAmount)}</p>
         </div>
-        <div className="overview-card total-saved">
+        <div className="summary-card">
           <h3>Ahorrado</h3>
           <p>{formatCurrency(totalCurrentAmount)}</p>
         </div>
-        <div className="overview-card overall-progress">
-          <h3>Progreso General</h3>
-          <p>{formatPercentage(overallProgress)}</p>
-          <div className="progress-bar">
-            <div 
-              className="progress-fill"
-              style={{ width: `${overallProgress}%` }}
-            ></div>
-          </div>
+      </div>
+
+      {/* Progreso general */}
+      <div className="overall-progress-card">
+        <h3>Progreso General</h3>
+        <p className="progress-percentage">{formatPercentage(overallProgress)}</p>
+        <div className="progress-bar">
+          <div 
+            className="progress-fill"
+            style={{ width: `${overallProgress}%` }}
+          ></div>
         </div>
       </div>
 
-      <div className="goals-list">
-        <div className="list-header">
-          <h3>Mis Metas ({goals.length})</h3>
-        </div>
-        
-        <div className="goals-grid">
-          {goals.map((goal, index) => {
-            const progress = calculateProgress(goal.saved, goal.target);
-            const daysRemaining = calculateDaysRemaining(goal.deadline);
-            const statusColor = getStatusColor(progress, daysRemaining);
-            const statusText = getStatusText(progress, daysRemaining);
-            const priorityInfo = getPriorityInfo(goal.priority);
-            
-            return (
-              <div key={`${goal.id}-${index}`} className="goal-card">
-                <div className="goal-header">
-                  <div className="goal-info">
-                    <span className="goal-icon">{goal.icon}</span>
-                    <div>
-                      <h4>{goal.title}</h4>
-                      <p>{goal.description}</p>
-                    </div>
-                  </div>
-                  <div className="goal-actions">
-                    <span className={`priority-badge ${priorityInfo.color}`}>
-                      {priorityInfo.label}
-                    </span>
-                    <button 
-                      className="btn-icon"
-                      onClick={() => handleDeleteGoal(goal.id)}
-                      title="Eliminar meta"
-                    >
-                      🗑️
-                    </button>
-                  </div>
-                </div>
-                
-                <div className="goal-details">
-                  <div className="amount-info">
-                    <div className="amount-row">
-                      <span>Meta:</span>
-                      <span>{formatCurrency(goal.target)}</span>
-                    </div>
-                    <div className="amount-row">
-                      <span>Ahorrado:</span>
-                      <span>{formatCurrency(goal.saved)}</span>
-                    </div>
-                    <div className="amount-row">
-                      <span>Faltante:</span>
-                      <span>{formatCurrency(goal.target - goal.saved)}</span>
-                    </div>
-                  </div>
-                  
-                  <div className="progress-section">
-                    <div className="progress-info">
-                      <span>{formatPercentage(progress)}</span>
-                      <span className={`status ${statusColor}`}>
-                        {statusText}
-                      </span>
-                    </div>
-                    <div className="progress-bar">
-                      <div 
-                        className="progress-fill"
-                        style={{ width: `${progress}%` }}
-                      ></div>
-                    </div>
-                  </div>
-                  
-                  <div className="deadline-info">
-                    <span>Fecha límite: {formatDate(goal.deadline)}</span>
-                    <span className={daysRemaining < 30 ? 'urgent' : ''}>
-                      {daysRemaining >= 0 ? `${daysRemaining} días restantes` : `${Math.abs(daysRemaining)} días vencida`}
-                    </span>
-                  </div>
-                  
-                                     <div className="update-progress">
-                     <input
-                       type="number"
-                       placeholder="Actualizar progreso"
-                       min="0"
-                       max={goal.target}
-                       step="1000"
-                       onChange={(e) => handleUpdateProgress(goal.id, parseFloat(e.target.value) || 0)}
-                     />
-                     <button 
-                       className="btn btn-secondary btn-sm"
-                       onClick={() => {
-                         const input = document.querySelector(`input[placeholder="Actualizar progreso"]`);
-                         if (input) {
-                           handleUpdateProgress(goal.id, parseFloat(input.value) || 0);
-                           input.value = '';
-                         }
-                       }}
-                     >
-                       Actualizar
-                     </button>
-                   </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Modal para agregar meta */}
-      {showAddForm && (
-        <div className="modal-overlay" onClick={() => setShowAddForm(false)}>
-          <div className="modal-content" onClick={e => e.stopPropagation()}>
+      {/* Formulario de nueva meta */}
+      {showForm && (
+        <div className="modal-overlay">
+          <div className="modal">
             <div className="modal-header">
-              <h3>Nueva Meta Financiera</h3>
+              <h2>Nueva Meta Financiera</h2>
               <button 
-                className="btn-icon"
-                onClick={() => setShowAddForm(false)}
+                className="modal-close"
+                onClick={() => setShowForm(false)}
               >
                 ✕
               </button>
             </div>
             
-            <form onSubmit={handleAddGoal} className="goal-form">
-              <div className="form-group">
-                <label>Título de la Meta</label>
-                <input
-                  type="text"
-                  value={newGoal.title}
-                  onChange={(e) => setNewGoal({...newGoal, title: e.target.value})}
-                  required
-                  placeholder="Ej: Fondo de Emergencia"
-                />
+            <form onSubmit={handleSubmit} className="goal-form">
+              <div className="form-row">
+                <div className="form-group">
+                  <label>Título *</label>
+                  <input
+                    type="text"
+                    value={formData.title}
+                    onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+                    required
+                    placeholder="Ej: Fondo de Emergencia"
+                  />
+                </div>
+                
+                <div className="form-group">
+                  <label>Categoría *</label>
+                  <select
+                    value={formData.category}
+                    onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value }))}
+                    required
+                  >
+                    <option value="">Seleccionar categoría</option>
+                    {categories.map((category, index) => (
+                      <option key={`category-${index}`} value={category.name}>{category.name}</option>
+                    ))}
+                  </select>
+                </div>
               </div>
-              
+
               <div className="form-group">
                 <label>Descripción</label>
                 <textarea
-                  value={newGoal.description}
-                  onChange={(e) => setNewGoal({...newGoal, description: e.target.value})}
-                  required
+                  value={formData.description}
+                  onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
                   placeholder="Describe tu meta..."
                   rows="3"
                 />
               </div>
-              
+
               <div className="form-row">
                 <div className="form-group">
-                  <label>Meta de Ahorro</label>
+                  <label>Meta de Ahorro *</label>
                   <input
                     type="number"
-                    value={newGoal.targetAmount}
-                    onChange={(e) => setNewGoal({...newGoal, targetAmount: e.target.value})}
+                    value={formData.target}
+                    onChange={(e) => setFormData(prev => ({ ...prev, target: e.target.value }))}
                     required
                     min="0"
-                    step="1000"
+                    step="10000"
                     placeholder="Ej: 5000000"
                   />
                 </div>
@@ -318,36 +248,31 @@ const Goals = () => {
                   <label>Ahorrado Actual</label>
                   <input
                     type="number"
-                    value={newGoal.currentAmount}
-                    onChange={(e) => setNewGoal({...newGoal, currentAmount: e.target.value})}
+                    value={formData.saved}
+                    onChange={(e) => setFormData(prev => ({ ...prev, saved: e.target.value }))}
                     min="0"
-                    step="1000"
+                    step="10000"
                     placeholder="Ej: 1000000"
                   />
                 </div>
               </div>
-              
+
               <div className="form-row">
                 <div className="form-group">
-                  <label>Categoría</label>
-                  <select
-                    value={newGoal.category}
-                    onChange={(e) => setNewGoal({...newGoal, category: e.target.value})}
+                  <label>Fecha Límite *</label>
+                  <input
+                    type="date"
+                    value={formData.deadline}
+                    onChange={(e) => setFormData(prev => ({ ...prev, deadline: e.target.value }))}
                     required
-                  >
-                    <option value="">Selecciona una categoría</option>
-                    {categories.map(category => (
-                      <option key={category.name} value={category.name}>{category.name}</option>
-                    ))}
-                  </select>
+                  />
                 </div>
                 
                 <div className="form-group">
                   <label>Prioridad</label>
                   <select
-                    value={newGoal.priority}
-                    onChange={(e) => setNewGoal({...newGoal, priority: e.target.value})}
-                    required
+                    value={formData.priority}
+                    onChange={(e) => setFormData(prev => ({ ...prev, priority: e.target.value }))}
                   >
                     {priorities.map(priority => (
                       <option key={priority.value} value={priority.value}>
@@ -357,19 +282,9 @@ const Goals = () => {
                   </select>
                 </div>
               </div>
-              
-              <div className="form-group">
-                <label>Fecha Límite</label>
-                <input
-                  type="date"
-                  value={newGoal.deadline}
-                  onChange={(e) => setNewGoal({...newGoal, deadline: e.target.value})}
-                  required
-                />
-              </div>
-              
+
               <div className="form-actions">
-                <button type="button" className="btn btn-secondary" onClick={() => setShowAddForm(false)}>
+                <button type="button" className="btn btn-secondary" onClick={() => setShowForm(false)}>
                   Cancelar
                 </button>
                 <button type="submit" className="btn btn-primary">
@@ -380,6 +295,116 @@ const Goals = () => {
           </div>
         </div>
       )}
+
+      {/* Lista de metas */}
+      <div className="goals-list">
+        {goals.length === 0 ? (
+          <div className="empty-state">
+            <p>No hay metas configuradas</p>
+            <button 
+              className="btn btn-primary"
+              onClick={() => setShowForm(true)}
+            >
+              Crear primera meta
+            </button>
+          </div>
+        ) : (
+          goals.map((goal) => {
+            const progress = calculateProgress(goal.saved, goal.target);
+            const daysRemaining = calculateDaysRemaining(goal.deadline);
+            const statusColor = getStatusColor(progress, daysRemaining);
+            const statusText = getStatusText(progress, daysRemaining);
+            const priorityInfo = getPriorityInfo(goal.priority);
+            const currentProgressValue = progressUpdates[goal.id] || '';
+            
+            return (
+              <div key={goal.id} className="goal-item">
+                <div className="goal-header">
+                  <div className="goal-info">
+                    <span className="goal-icon">{getCategoryIcon(goal.category)}</span>
+                    <div>
+                      <h3>{goal.title}</h3>
+                      {goal.description && <p>{goal.description}</p>}
+                    </div>
+                  </div>
+                  <div className="goal-actions">
+                    <span className={`priority-badge ${priorityInfo.color}`}>
+                      {priorityInfo.label}
+                    </span>
+                    <button 
+                      className="btn-delete"
+                      onClick={() => handleDelete(goal.id)}
+                      title="Eliminar meta"
+                    >
+                      🗑️
+                    </button>
+                  </div>
+                </div>
+                
+                <div className="goal-progress">
+                  <div className="progress-bar">
+                    <div 
+                      className="progress-fill"
+                      style={{ width: `${progress}%` }}
+                    ></div>
+                  </div>
+                  <span className="progress-text">{formatPercentage(progress)}</span>
+                </div>
+
+                <div className="goal-details">
+                  <div className="goal-amounts">
+                    <div className="amount-item">
+                      <span className="amount-label">Meta:</span>
+                      <span className="amount-value">{formatCurrency(goal.target)}</span>
+                    </div>
+                    <div className="amount-item">
+                      <span className="amount-label">Ahorrado:</span>
+                      <span className="amount-value">{formatCurrency(goal.saved)}</span>
+                    </div>
+                    <div className="amount-item">
+                      <span className="amount-label">Faltante:</span>
+                      <span className="amount-value">{formatCurrency(goal.target - goal.saved)}</span>
+                    </div>
+                  </div>
+                  
+                  <div className="goal-status">
+                    <span className={`status-badge ${statusColor}`}>
+                      {statusText}
+                    </span>
+                    <span className="deadline-info">
+                      {formatDate(goal.deadline)} • {daysRemaining >= 0 ? `${daysRemaining} días` : `${Math.abs(daysRemaining)} días vencida`}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="goal-update">
+                  <input
+                    type="number"
+                    placeholder="Actualizar progreso"
+                    min="0"
+                    max={goal.target}
+                    step="10000"
+                    value={currentProgressValue}
+                    onChange={(e) => handleProgressInputChange(goal.id, e.target.value)}
+                    onKeyPress={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        handleProgressSubmit(goal.id);
+                      }
+                    }}
+                  />
+                  <button 
+                    className="btn btn-secondary"
+                    onClick={() => handleProgressSubmit(goal.id)}
+                  >
+                    Actualizar
+                  </button>
+                </div>
+              </div>
+            );
+          })
+        )}
+      </div>
     </div>
   );
 };
