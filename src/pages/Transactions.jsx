@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useAppContext } from '../context/AppContext';
 import { formatCurrency, formatDate, getCategoryIcon } from '../utils/formatters';
 import { exportTransactionsToCSV } from '../utils/exportUtils';
+import { showSuccess, showError, showConfirmation } from '../utils/notifications';
 import './Transactions.css';
 
 const Transactions = () => {
@@ -75,19 +76,34 @@ const Transactions = () => {
       date: newTransaction.date || new Date().toISOString().split('T')[0]
     };
     
-    addTransaction(transaction);
-    setNewTransaction({
-      description: '',
-      amount: '',
-      type: 'expense',
-      category: 'Otros',
-      date: new Date().toISOString().split('T')[0]
-    });
-    setShowAddForm(false);
+    try {
+      addTransaction(transaction);
+      showSuccess('Transacción agregada exitosamente');
+      setNewTransaction({
+        description: '',
+        amount: '',
+        type: 'expense',
+        category: 'Otros',
+        date: new Date().toISOString().split('T')[0]
+      });
+      setShowAddForm(false);
+    } catch (error) {
+      showError('Error al agregar la transacción');
+    }
   };
 
   const handleDeleteTransaction = (id) => {
-    deleteTransaction(id);
+    showConfirmation(
+      '¿Estás seguro de que quieres eliminar esta transacción?',
+      () => {
+        try {
+          deleteTransaction(id);
+          showSuccess('Transacción eliminada exitosamente');
+        } catch (error) {
+          showError('Error al eliminar la transacción');
+        }
+      }
+    );
   };
 
   const totalIncome = transactions
@@ -109,7 +125,14 @@ const Transactions = () => {
                  <div className="header-actions">
            <button 
              className="btn btn-secondary"
-             onClick={() => exportTransactionsToCSV(transactions)}
+             onClick={() => {
+               try {
+                 exportTransactionsToCSV(transactions);
+                 showSuccess('Datos exportados exitosamente');
+               } catch (error) {
+                 showError('Error al exportar los datos');
+               }
+             }}
            >
              📊 Exportar
            </button>
