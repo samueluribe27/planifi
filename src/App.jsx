@@ -29,9 +29,18 @@ const AppContent = () => {
     setSidebarOpen(!sidebarOpen);
   };
 
-  // Inicializar tema
+  // Inicializar tema y optimizaciones
   useEffect(() => {
     initTheme();
+    
+    // Limpiar localStorage periódicamente
+    const cleanupInterval = setInterval(() => {
+      import('./utils/performance.js').then(({ cleanupStorage }) => {
+        cleanupStorage();
+      });
+    }, 24 * 60 * 60 * 1000); // Cada 24 horas
+    
+    return () => clearInterval(cleanupInterval);
   }, []);
 
   // Configurar atajos de teclado

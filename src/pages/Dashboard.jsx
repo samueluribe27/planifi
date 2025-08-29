@@ -33,7 +33,9 @@ const Dashboard = () => {
       <div className="dashboard-header">
         <div className="dashboard-title">
           <h1>Dashboard</h1>
-          <p>Resumen de tus finanzas personales</p>
+          <p className="welcome-message">
+            ¡Bienvenido a Planifi! Tu aplicación de finanzas personales está lista para ayudarte a alcanzar tus metas financieras.
+          </p>
         </div>
         
         <div className="period-selector">
