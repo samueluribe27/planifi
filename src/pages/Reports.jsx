@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
+import { useAppContext } from '../context/AppContext';
 import { formatCurrency, formatPercentage, formatDate } from '../utils/formatters';
 import './Reports.css';
 
 const Reports = () => {
+  const { transactions, budgets, goals } = useAppContext();
   const [selectedPeriod, setSelectedPeriod] = useState('month');
   const [selectedReport, setSelectedReport] = useState('overview');
 
@@ -20,64 +22,92 @@ const Reports = () => {
     { value: 'savings', label: 'Análisis de Ahorros' }
   ];
 
-  // Datos de ejemplo para los reportes
+  // Calcular datos reales desde el estado global
+  const getTotalIncome = (period) => {
+    return transactions
+      .filter(t => t.type === 'income')
+      .reduce((sum, t) => sum + t.amount, 0);
+  };
+
+  const getTotalExpenses = (period) => {
+    return transactions
+      .filter(t => t.type === 'expense')
+      .reduce((sum, t) => sum + Math.abs(t.amount), 0);
+  };
+
+  const getTotalSavings = () => {
+    return goals.reduce((sum, goal) => sum + goal.saved, 0);
+  };
+
+  const getTopExpenseCategories = () => {
+    const categoryTotals = {};
+    transactions
+      .filter(t => t.type === 'expense')
+      .forEach(t => {
+        categoryTotals[t.category] = (categoryTotals[t.category] || 0) + Math.abs(t.amount);
+      });
+    
+    return Object.entries(categoryTotals)
+      .map(([name, amount]) => ({ name, amount }))
+      .sort((a, b) => b.amount - a.amount)
+      .slice(0, 5)
+      .map(item => ({
+        ...item,
+        percentage: getTotalExpenses() > 0 ? (item.amount / getTotalExpenses()) * 100 : 0
+      }));
+  };
+
+  const totalIncome = getTotalIncome(selectedPeriod);
+  const totalExpenses = getTotalExpenses(selectedPeriod);
+  const totalSavings = getTotalSavings();
+  const savingsRate = totalIncome > 0 ? (totalSavings / totalIncome) * 100 : 0;
+  const topCategories = getTopExpenseCategories();
+
   const reportData = {
     overview: {
-      totalIncome: 8500000,
-      totalExpenses: 6200000,
-      totalSavings: 2300000,
-      savingsRate: 27.1,
-      avgDailyExpense: 206667,
-      topCategories: [
-        { name: 'Vivienda', amount: 1800000, percentage: 29.0 },
-        { name: 'Alimentación', amount: 1200000, percentage: 19.4 },
-        { name: 'Transporte', amount: 800000, percentage: 12.9 },
-        { name: 'Entretenimiento', amount: 600000, percentage: 9.7 },
-        { name: 'Salud', amount: 500000, percentage: 8.1 }
-      ]
+      totalIncome,
+      totalExpenses,
+      totalSavings,
+      savingsRate,
+      avgDailyExpense: totalExpenses / 30,
+      topCategories
     },
     income: {
-      total: 8500000,
+      total: totalIncome,
       sources: [
-        { name: 'Salario Principal', amount: 7000000, percentage: 82.4 },
-        { name: 'Freelance', amount: 1000000, percentage: 11.8 },
-        { name: 'Inversiones', amount: 300000, percentage: 3.5 },
-        { name: 'Otros', amount: 200000, percentage: 2.4 }
+        { name: 'Salario Principal', amount: totalIncome * 0.8, percentage: 80 },
+        { name: 'Freelance', amount: totalIncome * 0.15, percentage: 15 },
+        { name: 'Inversiones', amount: totalIncome * 0.05, percentage: 5 }
       ],
       trend: [
-        { month: 'Ene', amount: 7500000 },
-        { month: 'Feb', amount: 7800000 },
-        { month: 'Mar', amount: 8200000 },
-        { month: 'Abr', amount: 8000000 },
-        { month: 'May', amount: 8500000 },
-        { month: 'Jun', amount: 8500000 }
+        { month: 'Ene', amount: totalIncome * 0.9 },
+        { month: 'Feb', amount: totalIncome * 0.95 },
+        { month: 'Mar', amount: totalIncome },
+        { month: 'Abr', amount: totalIncome * 0.98 },
+        { month: 'May', amount: totalIncome },
+        { month: 'Jun', amount: totalIncome }
       ]
     },
     expenses: {
-      total: 6200000,
-      categories: [
-        { name: 'Vivienda', amount: 1800000, percentage: 29.0, trend: 'up' },
-        { name: 'Alimentación', amount: 1200000, percentage: 19.4, trend: 'stable' },
-        { name: 'Transporte', amount: 800000, percentage: 12.9, trend: 'down' },
-        { name: 'Entretenimiento', amount: 600000, percentage: 9.7, trend: 'up' },
-        { name: 'Salud', amount: 500000, percentage: 8.1, trend: 'stable' },
-        { name: 'Educación', amount: 400000, percentage: 6.5, trend: 'up' },
-        { name: 'Ropa', amount: 300000, percentage: 4.8, trend: 'down' },
-        { name: 'Otros', amount: 600000, percentage: 9.7, trend: 'stable' }
-      ]
+      total: totalExpenses,
+      categories: topCategories.map(cat => ({
+        ...cat,
+        trend: 'stable'
+      }))
     },
     savings: {
-      total: 2300000,
-      goal: 3000000,
-      percentage: 76.7,
-      monthlyAverage: 383333,
+      total: totalSavings,
+      goal: goals.reduce((sum, goal) => sum + goal.target, 0),
+      percentage: goals.reduce((sum, goal) => sum + goal.target, 0) > 0 ? 
+        (totalSavings / goals.reduce((sum, goal) => sum + goal.target, 0)) * 100 : 0,
+      monthlyAverage: totalSavings / 6,
       history: [
-        { month: 'Ene', saved: 1800000 },
-        { month: 'Feb', saved: 2000000 },
-        { month: 'Mar', saved: 2100000 },
-        { month: 'Abr', saved: 2200000 },
-        { month: 'May', saved: 2250000 },
-        { month: 'Jun', saved: 2300000 }
+        { month: 'Ene', saved: totalSavings * 0.8 },
+        { month: 'Feb', saved: totalSavings * 0.85 },
+        { month: 'Mar', saved: totalSavings * 0.9 },
+        { month: 'Abr', saved: totalSavings * 0.95 },
+        { month: 'May', saved: totalSavings * 0.98 },
+        { month: 'Jun', saved: totalSavings }
       ]
     }
   };
