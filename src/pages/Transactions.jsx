@@ -1,18 +1,15 @@
 import React, { useState } from 'react';
+import { useAppContext } from '../context/AppContext';
 import { formatCurrency, formatDate, getCategoryIcon } from '../utils/formatters';
 import './Transactions.css';
 
 const Transactions = () => {
-  const [transactions, setTransactions] = useState([
-    { id: 1, description: 'Salario', amount: 8500.00, type: 'income', date: '2024-01-15', category: 'Trabajo' },
-    { id: 2, description: 'Supermercado', amount: -120.50, type: 'expense', date: '2024-01-14', category: 'Alimentación' },
-    { id: 3, description: 'Gasolina', amount: -45.00, type: 'expense', date: '2024-01-13', category: 'Transporte' },
-    { id: 4, description: 'Freelance', amount: 1200.00, type: 'income', date: '2024-01-12', category: 'Trabajo' },
-    { id: 5, description: 'Restaurante', amount: -85.00, type: 'expense', date: '2024-01-11', category: 'Entretenimiento' },
-    { id: 6, description: 'Netflix', amount: -15.99, type: 'expense', date: '2024-01-10', category: 'Entretenimiento' },
-    { id: 7, description: 'Inversión', amount: 500.00, type: 'income', date: '2024-01-09', category: 'Inversiones' },
-    { id: 8, description: 'Ropa', amount: -75.00, type: 'expense', date: '2024-01-08', category: 'Ropa' }
-  ]);
+  const { 
+    transactions, 
+    addTransaction, 
+    deleteTransaction, 
+    categories 
+  } = useAppContext();
 
   const [filters, setFilters] = useState({
     type: 'all',
@@ -29,11 +26,7 @@ const Transactions = () => {
     date: new Date().toISOString().split('T')[0]
   });
 
-  const categories = [
-    'Trabajo', 'Alimentación', 'Transporte', 'Entretenimiento', 
-    'Salud', 'Educación', 'Vivienda', 'Servicios', 'Ropa', 
-    'Viajes', 'Inversiones', 'Otros'
-  ];
+
 
   const filteredTransactions = transactions.filter(transaction => {
     if (filters.type !== 'all' && transaction.type !== filters.type) return false;
@@ -44,12 +37,12 @@ const Transactions = () => {
   const handleAddTransaction = (e) => {
     e.preventDefault();
     const transaction = {
-      id: Date.now(),
       ...newTransaction,
-      amount: newTransaction.type === 'expense' ? -Math.abs(newTransaction.amount) : Math.abs(newTransaction.amount)
+      amount: parseFloat(newTransaction.amount),
+      date: newTransaction.date || new Date().toISOString().split('T')[0]
     };
     
-    setTransactions([transaction, ...transactions]);
+    addTransaction(transaction);
     setNewTransaction({
       description: '',
       amount: '',
@@ -61,12 +54,12 @@ const Transactions = () => {
   };
 
   const handleDeleteTransaction = (id) => {
-    setTransactions(transactions.filter(t => t.id !== id));
+    deleteTransaction(id);
   };
 
   const totalIncome = transactions
     .filter(t => t.type === 'income')
-    .reduce((sum, t) => sum + Math.abs(t.amount), 0);
+    .reduce((sum, t) => sum + t.amount, 0);
 
   const totalExpenses = transactions
     .filter(t => t.type === 'expense')
@@ -237,7 +230,7 @@ const Transactions = () => {
                   onChange={(e) => setNewTransaction({...newTransaction, category: e.target.value})}
                 >
                   {categories.map(category => (
-                    <option key={category} value={category}>{category}</option>
+                    <option key={category.name} value={category.name}>{category.name}</option>
                   ))}
                 </select>
               </div>
