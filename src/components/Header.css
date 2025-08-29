@@ -1,18 +1,32 @@
+/*
+ * Estilos del Header
+ * Este es el contenedor principal de la cabecera, que se mantiene fijo en la parte superior de la página.
+ */
 .header {
+  /* Utiliza variables CSS para el fondo y el borde. */
   background: var(--bg-primary);
   border-bottom: 1px solid var(--border-color);
+  /* Fija el header en la parte superior para que sea visible al hacer scroll. */
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
+  /* Asegura que el header esté por encima de otros elementos. */
   z-index: 100;
+  /* Establece una altura fija. */
   height: 70px;
 }
 
+/*
+ * Estilos del Contenido del Header
+ * Este contenedor organiza los elementos de la cabecera, como el logo, la barra de búsqueda y el menú de navegación.
+ */
 .header-content {
+  /* Utiliza flexbox para alinear y distribuir los elementos de manera uniforme. */
   display: flex;
   align-items: center;
   justify-content: space-between;
+  /* Añade padding horizontal y establece un ancho máximo para centrar el contenido en pantallas grandes. */
   padding: 0 2rem;
   height: 100%;
   max-width: 1400px;
@@ -20,16 +34,16 @@
   gap: 20px;
 }
 
+/*
+ * Estilos del Logo
+ * Define la apariencia del logo.
+ */
 .logo {
   display: flex;
   align-items: center;
 }
 
-.logo a {
-  text-decoration: none;
-  color: inherit;
-}
-
+/* Estilos para el texto del logo. */
 .logo h1 {
   font-size: 1.5rem;
   font-weight: 700;
@@ -37,38 +51,55 @@
   margin: 0;
 }
 
+/*
+ * Estilos de la Barra de Búsqueda
+ * Define el contenedor de la barra de búsqueda en el header.
+ */
 .header-search {
+  /* Permite que la barra de búsqueda se expanda para llenar el espacio disponible. */
   flex: 1;
   max-width: 400px;
   margin: 0 20px;
 }
 
+/*
+ * Estilos del Menú de Navegación
+ * Organiza los enlaces de navegación en una fila.
+ */
 .nav-menu {
   display: flex;
   align-items: center;
   gap: 2rem;
 }
 
+/*
+ * Estilos de los Enlaces de Navegación
+ * Define la apariencia de cada enlace, incluyendo los estados activo y hover.
+ */
 .nav-link {
   text-decoration: none;
   color: var(--text-secondary);
   font-weight: 500;
   padding: 0.5rem 1rem;
   border-radius: 8px;
+  /* Añade una transición suave para los efectos hover. */
   transition: all 0.2s ease;
   position: relative;
 }
 
+/* Efecto al pasar el cursor por encima del enlace. */
 .nav-link:hover {
   color: var(--text-primary);
   background: var(--bg-secondary);
 }
 
+/* Estilo para el enlace que está actualmente activo. */
 .nav-link.active {
   color: var(--primary-color);
   background: rgba(59, 130, 246, 0.1);
 }
 
+/* Pseudo-elemento para la barra de resaltado debajo del enlace activo. */
 .nav-link.active::after {
   content: '';
   position: absolute;
@@ -81,12 +112,17 @@
   border-radius: 1px;
 }
 
+/*
+ * Estilos de la Sección del Usuario
+ * Organiza la información y el avatar del usuario.
+ */
 .user-section {
   display: flex;
   align-items: center;
   gap: 1rem;
 }
 
+/* Contenedor para el nombre y el correo electrónico del usuario. */
 .user-info {
   display: flex;
   flex-direction: column;
@@ -94,6 +130,7 @@
   text-align: right;
 }
 
+/* Estilos para el nombre y el correo electrónico. */
 .user-name {
   font-size: 0.875rem;
   font-weight: 600;
@@ -107,6 +144,10 @@
   margin: 0;
 }
 
+/*
+ * Estilos del Avatar del Usuario
+ * Define la apariencia del avatar con efectos de hover.
+ */
 .user-avatar {
   width: 40px;
   height: 40px;
@@ -127,12 +168,17 @@
   object-fit: cover;
 }
 
-/* Responsive */
+/*
+ * Diseño Responsivo
+ * Se ajusta a diferentes tamaños de pantalla.
+ */
 @media (max-width: 1024px) {
+  /* Reduce el padding para pantallas de tamaño intermedio. */
   .header-content {
     padding: 0 1rem;
   }
   
+  /* Ajusta el espaciado y el tamaño de los enlaces de navegación. */
   .nav-menu {
     gap: 1rem;
   }
@@ -142,20 +188,24 @@
     font-size: 0.875rem;
   }
   
+  /* Oculta la información de texto del usuario. */
   .user-info {
     display: none;
   }
 }
 
 @media (max-width: 768px) {
+  /* Reduce la altura del header en dispositivos móviles. */
   .header {
     height: 60px;
   }
   
+  /* Ajusta el tamaño del título. */
   .logo h1 {
     font-size: 1.25rem;
   }
   
+  /* Oculta la barra de búsqueda y el menú de navegación. */
   .header-search {
     display: none;
   }
@@ -164,6 +214,7 @@
     display: none;
   }
   
+  /* Asegura que el logo y la sección de usuario estén a los extremos. */
   .header-content {
     justify-content: space-between;
   }
