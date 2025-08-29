@@ -1,8 +1,16 @@
+/*
+ * Estilos para el Contenedor Principal
+ * Define la posición relativa para que los elementos hijos (como el menú desplegable) puedan posicionarse en relación a este contenedor.
+ */
 .theme-toggle {
   position: relative;
   display: inline-block;
 }
 
+/*
+ * Estilos del Botón Principal
+ * Define la apariencia y el comportamiento del botón que abre el menú de selección de tema.
+ */
 .theme-toggle-button {
   background: none;
   border: none;
@@ -21,11 +29,19 @@
   color: var(--text-primary);
 }
 
+/*
+ * Estilos del Ícono del Botón
+ * Define el tamaño y la alineación del ícono dentro del botón.
+ */
 .theme-icon {
   font-size: 18px;
   line-height: 1;
 }
 
+/*
+ * Estilos del Menú Desplegable
+ * Define la apariencia y el posicionamiento del menú que se muestra al hacer clic en el botón.
+ */
 .theme-dropdown {
   position: absolute;
   top: 100%;
@@ -40,6 +56,10 @@
   overflow: hidden;
 }
 
+/*
+ * Estilos del Encabezado del Menú Desplegable
+ * Define el estilo de la sección superior del menú, que contiene un título y una descripción.
+ */
 .theme-dropdown-header {
   padding: 16px 20px;
   border-bottom: 1px solid var(--border-color);
@@ -59,10 +79,18 @@
   color: var(--text-secondary);
 }
 
+/*
+ * Estilos de la Lista de Opciones de Tema
+ * Contenedor para los botones de selección de tema.
+ */
 .theme-options {
   padding: 8px;
 }
 
+/*
+ * Estilos de Cada Opción de Tema Individual
+ * Define el diseño y los efectos de interacción de cada botón de tema.
+ */
 .theme-option {
   display: flex;
   align-items: center;
@@ -90,6 +118,10 @@
   color: rgba(255, 255, 255, 0.8);
 }
 
+/*
+ * Estilos para los Componentes Internos de la Opción de Tema
+ * Define los estilos para el ícono, el contenido de texto, el nombre, la descripción y el ícono de verificación.
+ */
 .theme-option-icon {
   font-size: 20px;
   margin-right: 12px;
@@ -120,7 +152,10 @@
   flex-shrink: 0;
 }
 
-/* Responsive */
+/*
+ * Estilos Responsivos
+ * Ajusta el diseño para pantallas más pequeñas, como las de los dispositivos móviles.
+ */
 @media (max-width: 768px) {
   .theme-dropdown {
     position: fixed;
