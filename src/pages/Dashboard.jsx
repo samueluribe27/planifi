@@ -1,44 +1,32 @@
 import React, { useState } from 'react';
+import { useAppContext } from '../context/AppContext';
+import { formatCurrency, getTransactionIcon } from '../utils/formatters';
 import './Dashboard.css';
 
 const Dashboard = () => {
   const [currentPeriod, setCurrentPeriod] = useState('month');
+  const { 
+    getTotalIncome, 
+    getTotalExpenses, 
+    getTotalSavings, 
+    getTotalBudgetSpent, 
+    getTotalBudgetLimit,
+    getRecentTransactions,
+    transactions,
+    budgets,
+    goals
+  } = useAppContext();
 
-  // Datos de ejemplo para las métricas
-  const financialData = {
-    balance: 15420.50,
-    income: 8500.00,
-    expenses: 3200.75,
-    savings: 5300.00,
-    budgetProgress: 68,
-    recentTransactions: [
-      { id: 1, description: 'Salario', amount: 8500.00, type: 'income', date: '2024-01-15', category: 'Trabajo' },
-      { id: 2, description: 'Supermercado', amount: -120.50, type: 'expense', date: '2024-01-14', category: 'Alimentación' },
-      { id: 3, description: 'Gasolina', amount: -45.00, type: 'expense', date: '2024-01-13', category: 'Transporte' },
-      { id: 4, description: 'Freelance', amount: 1200.00, type: 'income', date: '2024-01-12', category: 'Trabajo' },
-      { id: 5, description: 'Restaurante', amount: -85.00, type: 'expense', date: '2024-01-11', category: 'Entretenimiento' }
-    ]
-  };
+  // Calcular métricas reales desde el estado global
+  const totalIncome = getTotalIncome(currentPeriod);
+  const totalExpenses = getTotalExpenses(currentPeriod);
+  const totalSavings = getTotalSavings();
+  const balance = totalIncome - totalExpenses;
+  const budgetProgress = getTotalBudgetLimit() > 0 ? 
+    Math.round((getTotalBudgetSpent() / getTotalBudgetLimit()) * 100) : 0;
+  const recentTransactions = getRecentTransactions(5);
 
-  const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('es-CO', {
-      style: 'currency',
-      currency: 'COP',
-      minimumFractionDigits: 0
-    }).format(amount);
-  };
 
-  const getTransactionIcon = (category) => {
-    const icons = {
-      'Trabajo': '💼',
-      'Alimentación': '🛒',
-      'Transporte': '🚗',
-      'Entretenimiento': '🎮',
-      'Salud': '🏥',
-      'Educación': '📚'
-    };
-    return icons[category] || '💰';
-  };
 
   return (
     <div className="dashboard">
@@ -67,7 +55,7 @@ const Dashboard = () => {
           <div className="metric-icon">💰</div>
           <div className="metric-content">
             <h3>Balance Total</h3>
-            <p className="metric-value">{formatCurrency(financialData.balance)}</p>
+            <p className="metric-value">{formatCurrency(balance)}</p>
             <span className="metric-change positive">+12.5% vs mes anterior</span>
           </div>
         </div>
@@ -76,7 +64,7 @@ const Dashboard = () => {
           <div className="metric-icon">📈</div>
           <div className="metric-content">
             <h3>Ingresos</h3>
-            <p className="metric-value">{formatCurrency(financialData.income)}</p>
+            <p className="metric-value">{formatCurrency(totalIncome)}</p>
             <span className="metric-change positive">+8.2% vs mes anterior</span>
           </div>
         </div>
@@ -85,7 +73,7 @@ const Dashboard = () => {
           <div className="metric-icon">📉</div>
           <div className="metric-content">
             <h3>Gastos</h3>
-            <p className="metric-value">{formatCurrency(financialData.expenses)}</p>
+            <p className="metric-value">{formatCurrency(totalExpenses)}</p>
             <span className="metric-change negative">+5.1% vs mes anterior</span>
           </div>
         </div>
@@ -94,7 +82,7 @@ const Dashboard = () => {
           <div className="metric-icon">🎯</div>
           <div className="metric-content">
             <h3>Ahorros</h3>
-            <p className="metric-value">{formatCurrency(financialData.savings)}</p>
+            <p className="metric-value">{formatCurrency(totalSavings)}</p>
             <span className="metric-change positive">+15.3% vs mes anterior</span>
           </div>
         </div>
@@ -106,25 +94,25 @@ const Dashboard = () => {
             <h3>Progreso del Presupuesto</h3>
             <div className="progress-container">
               <div className="progress-bar">
-                <div 
-                  className="progress-fill" 
-                  style={{ width: `${financialData.budgetProgress}%` }}
-                ></div>
+                              <div 
+                className="progress-fill" 
+                style={{ width: `${budgetProgress}%` }}
+              ></div>
               </div>
-              <span className="progress-text">{financialData.budgetProgress}% utilizado</span>
+              <span className="progress-text">{budgetProgress}% utilizado</span>
             </div>
             <div className="budget-details">
               <div className="budget-item">
                 <span>Presupuesto mensual:</span>
-                <span>{formatCurrency(50000)}</span>
+                <span>{formatCurrency(getTotalBudgetLimit())}</span>
               </div>
               <div className="budget-item">
                 <span>Gastado:</span>
-                <span>{formatCurrency(34000)}</span>
+                <span>{formatCurrency(getTotalBudgetSpent())}</span>
               </div>
               <div className="budget-item">
                 <span>Restante:</span>
-                <span>{formatCurrency(16000)}</span>
+                <span>{formatCurrency(getTotalBudgetLimit() - getTotalBudgetSpent())}</span>
               </div>
             </div>
           </div>
@@ -136,7 +124,7 @@ const Dashboard = () => {
             </div>
             
             <div className="transactions-list">
-              {financialData.recentTransactions.map((transaction) => (
+              {recentTransactions.map((transaction) => (
                 <div key={transaction.id} className="transaction-item">
                   <div className="transaction-icon">
                     {getTransactionIcon(transaction.category)}
