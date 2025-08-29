@@ -1,54 +1,94 @@
+/*
+ * Estilos del Contenedor de la Barra de Búsqueda
+ * Este es el contenedor principal que envuelve el campo de búsqueda y sus resultados.
+ */
 .search-container {
+  /* Establece la posición relativa para que los resultados de la búsqueda puedan ser posicionados de forma absoluta dentro de él. */
   position: relative;
+  /* El ancho es 100% con un ancho máximo para mantener el diseño consistente. */
   width: 100%;
   max-width: 400px;
 }
 
+/*
+ * Estilos del Campo de Búsqueda
+ * Este contenedor flexbox se utiliza para alinear el campo de entrada y el icono de búsqueda.
+ */
 .search-input-wrapper {
   position: relative;
   display: flex;
   align-items: center;
 }
 
+/*
+ * Estilos del Input de Búsqueda
+ * Define la apariencia del campo de texto donde el usuario escribe.
+ */
 .search-input {
+  /* Ocupa el 100% del ancho del contenedor. */
   width: 100%;
+  /* Añade padding para crear espacio interior, dejando espacio para el icono de búsqueda. */
   padding: 12px 40px 12px 16px;
+  /* Borde y esquinas redondeadas. */
   border: 2px solid var(--border-color);
   border-radius: 8px;
+  /* Estilo de fuente. */
   font-size: 14px;
   background: white;
+  /* Transición suave para los efectos de foco. */
   transition: all 0.2s ease;
 }
 
+/* Estilos aplicados cuando el campo de búsqueda está en foco. */
 .search-input:focus {
+  /* Elimina el contorno predeterminado del navegador. */
   outline: none;
+  /* Cambia el color del borde y añade una sombra sutil. */
   border-color: var(--primary-color);
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
+/*
+ * Estilos del Icono de Búsqueda
+ * Define la posición y apariencia del icono de la lupa.
+ */
 .search-icon {
+  /* Posiciona el icono de forma absoluta en el lado derecho del campo de entrada. */
   position: absolute;
   right: 12px;
   font-size: 16px;
   color: var(--text-secondary);
+  /* Asegura que el icono no intercepte los clics del mouse en el campo de entrada. */
   pointer-events: none;
 }
 
+/*
+ * Estilos del Contenedor de Resultados
+ * Este es el menú desplegable que muestra los resultados de la búsqueda.
+ */
 .search-results {
+  /* Se posiciona de forma absoluta justo debajo del campo de búsqueda. */
   position: absolute;
   top: 100%;
   left: 0;
   right: 0;
+  /* Estilo de caja con borde, esquinas redondeadas y sombra. */
   background: white;
   border: 1px solid var(--border-color);
   border-radius: 8px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  /* Se asegura de que esté sobre otros elementos. */
   z-index: 1000;
+  /* Altura máxima con scroll si los resultados exceden el límite. */
   max-height: 400px;
   overflow-y: auto;
   margin-top: 4px;
 }
 
+/*
+ * Estilos del Encabezado de la Sección de Resultados
+ * Este es el título que categoriza los resultados.
+ */
 .results-header {
   padding: 12px 16px;
   border-bottom: 1px solid var(--border-color);
@@ -60,7 +100,12 @@
   letter-spacing: 0.5px;
 }
 
+/*
+ * Estilos de cada Elemento de Resultado
+ * Define la apariencia de cada elemento de la lista de resultados.
+ */
 .result-item {
+  /* Utiliza flexbox para alinear el icono, el contenido y el monto. */
   display: flex;
   align-items: center;
   padding: 12px 16px;
@@ -73,26 +118,20 @@
   border-bottom: none;
 }
 
+/* Efecto al pasar el cursor sobre un resultado. */
 .result-item:hover {
   background: var(--bg-secondary);
 }
 
-.result-item.result-success {
-  border-left: 3px solid #10b981;
-}
+/* Estilos para diferentes tipos de resultados, usando un borde izquierdo. */
+.result-item.result-success { border-left: 3px solid #10b981; }
+.result-item.result-danger { border-left: 3px solid #ef4444; }
+.result-item.result-warning { border-left: 3px solid #f59e0b; }
+.result-item.result-info { border-left: 3px solid #3b82f6; }
 
-.result-item.result-danger {
-  border-left: 3px solid #ef4444;
-}
-
-.result-item.result-warning {
-  border-left: 3px solid #f59e0b;
-}
-
-.result-item.result-info {
-  border-left: 3px solid #3b82f6;
-}
-
+/*
+ * Estilos del Contenido del Resultado
+ */
 .result-icon {
   font-size: 20px;
   margin-right: 12px;
@@ -135,6 +174,7 @@
   background: var(--bg-secondary);
 }
 
+/* Colores para montos de ingresos y gastos. */
 .result-amount .amount.income {
   color: #10b981;
   background: rgba(16, 185, 129, 0.1);
@@ -145,6 +185,7 @@
   background: rgba(239, 68, 68, 0.1);
 }
 
+/* Estilos del Pie de Página de los Resultados. */
 .results-footer {
   padding: 8px 16px;
   background: var(--bg-secondary);
@@ -154,33 +195,38 @@
   border-top: 1px solid var(--border-color);
 }
 
-/* Responsive */
+/*
+ * Diseño Responsivo
+ * Se ajusta para pantallas más pequeñas.
+ */
 @media (max-width: 768px) {
   .search-container {
     max-width: 100%;
   }
-  
+
   .search-results {
+    /* En dispositivos móviles, los resultados se fijan a la pantalla para una mejor experiencia. */
     position: fixed;
     top: 80px;
     left: 16px;
     right: 16px;
     max-height: 60vh;
   }
-  
+
+  /* Ajustes de padding y tamaño de fuente para mejorar la legibilidad en pantallas pequeñas. */
   .result-item {
     padding: 16px;
   }
-  
+
   .result-icon {
     font-size: 24px;
     margin-right: 16px;
   }
-  
+
   .result-title {
     font-size: 16px;
   }
-  
+
   .result-subtitle {
     font-size: 14px;
   }
