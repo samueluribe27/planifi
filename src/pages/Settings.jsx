@@ -1,15 +1,17 @@
 import React, { useState } from 'react';
+import { useAppContext } from '../context/AppContext';
 import './Settings.css';
 
 const Settings = () => {
+  const { user, updateUser } = useAppContext();
   const [activeTab, setActiveTab] = useState('profile');
   const [userProfile, setUserProfile] = useState({
-    name: 'Juan Pérez',
-    email: 'juan@example.com',
-    phone: '+57 300 123 4567',
-    currency: 'COP',
-    language: 'es',
-    timezone: 'America/Bogota',
+    name: user.name || 'Juan Pérez',
+    email: user.email || 'juan@example.com',
+    phone: user.phone || '+57 300 123 4567',
+    currency: user.currency || 'COP',
+    language: user.language || 'es',
+    timezone: user.timezone || 'America/Bogota',
     notifications: {
       email: true,
       push: true,
@@ -60,6 +62,7 @@ const Settings = () => {
 
   const handleSaveProfile = () => {
     setUserProfile(tempProfile);
+    updateUser(tempProfile);
     setIsEditing(false);
   };
 

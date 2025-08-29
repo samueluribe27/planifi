@@ -4,7 +4,7 @@ import { formatCurrency, formatPercentage, formatDate } from '../utils/formatter
 import './Goals.css';
 
 const Goals = () => {
-  const { goals, addGoal, deleteGoal } = useAppContext();
+  const { goals, addGoal, deleteGoal, updateGoal, categories } = useAppContext();
 
   const [showAddForm, setShowAddForm] = useState(false);
   const [newGoal, setNewGoal] = useState({
@@ -84,11 +84,7 @@ const Goals = () => {
   };
 
   const handleUpdateProgress = (id, newAmount) => {
-    setGoals(goals.map(goal => 
-      goal.id === id 
-        ? { ...goal, currentAmount: Math.min(newAmount, goal.targetAmount) }
-        : goal
-    ));
+    updateGoal(id, { saved: Math.min(newAmount, goals.find(g => g.id === id)?.target || 0) });
   };
 
   const getGoalIcon = (category) => {
@@ -107,7 +103,7 @@ const Goals = () => {
   };
 
   const totalGoals = goals.length;
-  const completedGoals = goals.filter(g => calculateProgress(g.currentAmount, g.targetAmount) >= 100).length;
+  const completedGoals = goals.filter(g => calculateProgress(g.saved, g.target) >= 100).length;
   const totalTargetAmount = goals.reduce((sum, goal) => sum + goal.target, 0);
   const totalCurrentAmount = goals.reduce((sum, goal) => sum + goal.saved, 0);
   const overallProgress = totalTargetAmount > 0 ? (totalCurrentAmount / totalTargetAmount) * 100 : 0;
@@ -326,8 +322,9 @@ const Goals = () => {
                     onChange={(e) => setNewGoal({...newGoal, category: e.target.value})}
                     required
                   >
+                    <option value="">Selecciona una categoría</option>
                     {categories.map(category => (
-                      <option key={category} value={category}>{category}</option>
+                      <option key={category.name} value={category.name}>{category.name}</option>
                     ))}
                   </select>
                 </div>

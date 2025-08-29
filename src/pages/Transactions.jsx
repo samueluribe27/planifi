@@ -14,7 +14,10 @@ const Transactions = () => {
   const [filters, setFilters] = useState({
     type: 'all',
     category: 'all',
-    dateRange: 'all'
+    dateRange: 'all',
+    minAmount: '',
+    maxAmount: '',
+    searchTerm: ''
   });
 
   const [showAddForm, setShowAddForm] = useState(false);
@@ -31,6 +34,9 @@ const Transactions = () => {
   const filteredTransactions = transactions.filter(transaction => {
     if (filters.type !== 'all' && transaction.type !== filters.type) return false;
     if (filters.category !== 'all' && transaction.category !== filters.category) return false;
+    if (filters.minAmount && Math.abs(transaction.amount) < parseFloat(filters.minAmount)) return false;
+    if (filters.maxAmount && Math.abs(transaction.amount) > parseFloat(filters.maxAmount)) return false;
+    if (filters.searchTerm && !transaction.description.toLowerCase().includes(filters.searchTerm.toLowerCase())) return false;
     return true;
   });
 
@@ -136,6 +142,38 @@ const Transactions = () => {
               <option value="month">Este mes</option>
               <option value="quarter">Este trimestre</option>
             </select>
+          </div>
+          
+          <div className="filter-group">
+            <label>Monto Mínimo</label>
+            <input
+              type="number"
+              value={filters.minAmount}
+              onChange={(e) => setFilters({...filters, minAmount: e.target.value})}
+              placeholder="0"
+              min="0"
+            />
+          </div>
+          
+          <div className="filter-group">
+            <label>Monto Máximo</label>
+            <input
+              type="number"
+              value={filters.maxAmount}
+              onChange={(e) => setFilters({...filters, maxAmount: e.target.value})}
+              placeholder="Sin límite"
+              min="0"
+            />
+          </div>
+          
+          <div className="filter-group">
+            <label>Buscar</label>
+            <input
+              type="text"
+              value={filters.searchTerm}
+              onChange={(e) => setFilters({...filters, searchTerm: e.target.value})}
+              placeholder="Buscar por descripción..."
+            />
           </div>
         </div>
       </div>

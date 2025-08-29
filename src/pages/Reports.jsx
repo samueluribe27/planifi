@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useAppContext } from '../context/AppContext';
 import { formatCurrency, formatPercentage, formatDate } from '../utils/formatters';
+import { exportTransactionsToCSV, exportBudgetsToCSV, exportGoalsToCSV, exportFinancialReport } from '../utils/exportUtils';
 import './Reports.css';
 
 const Reports = () => {
@@ -354,6 +355,21 @@ const Reports = () => {
                 </option>
               ))}
             </select>
+          </div>
+          
+          <div className="export-actions">
+            <button 
+              className="btn btn-secondary"
+              onClick={() => exportTransactionsToCSV(transactions)}
+            >
+              📊 Exportar Transacciones
+            </button>
+            <button 
+              className="btn btn-secondary"
+              onClick={() => exportFinancialReport(transactions, budgets, goals)}
+            >
+              📈 Exportar Reporte General
+            </button>
           </div>
         </div>
       </div>
