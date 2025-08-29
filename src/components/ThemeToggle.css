@@ -1,0 +1,149 @@
+.theme-toggle {
+  position: relative;
+  display: inline-block;
+}
+
+.theme-toggle-button {
+  background: none;
+  border: none;
+  padding: 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+}
+
+.theme-toggle-button:hover {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+.theme-icon {
+  font-size: 18px;
+  line-height: 1;
+}
+
+.theme-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  box-shadow: var(--shadow-xl);
+  z-index: 1000;
+  min-width: 280px;
+  margin-top: 8px;
+  overflow: hidden;
+}
+
+.theme-dropdown-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border-color);
+  background: var(--bg-secondary);
+}
+
+.theme-dropdown-header h3 {
+  margin: 0 0 4px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.theme-dropdown-header p {
+  margin: 0;
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.theme-options {
+  padding: 8px;
+}
+
+.theme-option {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 12px 16px;
+  border: none;
+  background: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+  color: var(--text-primary);
+}
+
+.theme-option:hover {
+  background: var(--bg-secondary);
+}
+
+.theme-option.active {
+  background: var(--primary-color);
+  color: white;
+}
+
+.theme-option.active .theme-option-description {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.theme-option-icon {
+  font-size: 20px;
+  margin-right: 12px;
+  flex-shrink: 0;
+}
+
+.theme-option-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.theme-option-name {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.theme-option-description {
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+.theme-option-check {
+  font-size: 16px;
+  font-weight: bold;
+  margin-left: 8px;
+  flex-shrink: 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .theme-dropdown {
+    position: fixed;
+    top: 80px;
+    right: 16px;
+    left: 16px;
+    min-width: auto;
+  }
+  
+  .theme-option {
+    padding: 16px;
+  }
+  
+  .theme-option-icon {
+    font-size: 24px;
+    margin-right: 16px;
+  }
+  
+  .theme-option-name {
+    font-size: 16px;
+  }
+  
+  .theme-option-description {
+    font-size: 14px;
+  }
+}

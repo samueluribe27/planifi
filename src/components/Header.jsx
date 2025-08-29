@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import SearchBar from './SearchBar';
+import ThemeToggle from './ThemeToggle';
 import './Header.css';
 
 const Header = ({ searchRef }) => {
@@ -51,6 +52,7 @@ const Header = ({ searchRef }) => {
         </nav>
         
         <div className="user-section">
+          <ThemeToggle />
           <div className="user-info">
             <span className="user-name">Juan Pérez</span>
             <span className="user-email">juan@example.com</span>

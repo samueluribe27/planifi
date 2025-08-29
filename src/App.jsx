@@ -16,6 +16,7 @@ import {
   showShortcutsHelp,
   showShortcutNotification 
 } from './utils/keyboardShortcuts';
+import { initTheme } from './utils/theme';
 import './App.css';
 
 // Componente interno para manejar atajos de teclado
@@ -27,6 +28,11 @@ const AppContent = () => {
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
   };
+
+  // Inicializar tema
+  useEffect(() => {
+    initTheme();
+  }, []);
 
   // Configurar atajos de teclado
   useEffect(() => {
