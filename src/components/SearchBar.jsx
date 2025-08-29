@@ -1,14 +1,22 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from 'react';
 import { useAppContext } from '../context/AppContext';
 import { formatCurrency, formatDate } from '../utils/formatters';
 import './SearchBar.css';
 
-const SearchBar = () => {
+const SearchBar = forwardRef((props, ref) => {
   const { transactions, budgets, goals } = useAppContext();
   const [searchTerm, setSearchTerm] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const [results, setResults] = useState([]);
   const searchRef = useRef(null);
+  const inputRef = useRef(null);
+
+  // Exponer métodos al componente padre
+  useImperativeHandle(ref, () => ({
+    focus: () => {
+      inputRef.current?.focus();
+    }
+  }));
 
   // Cerrar resultados al hacer clic fuera
   useEffect(() => {
@@ -126,6 +134,7 @@ const SearchBar = () => {
     <div className="search-container" ref={searchRef}>
       <div className="search-input-wrapper">
         <input
+          ref={inputRef}
           type="text"
           className="search-input"
           placeholder="Buscar transacciones, presupuestos, metas..."

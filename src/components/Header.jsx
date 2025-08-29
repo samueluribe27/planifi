@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import SearchBar from './SearchBar';
 import './Header.css';
 
-const Header = () => {
+const Header = ({ searchRef }) => {
   const location = useLocation();
 
   const isActive = (path) => {
@@ -20,7 +20,7 @@ const Header = () => {
         </div>
         
         <div className="header-search">
-          <SearchBar />
+          <SearchBar ref={searchRef} />
         </div>
         
         <nav className="nav-menu">
