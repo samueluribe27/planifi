@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useAppContext } from '../context/AppContext';
 import { formatCurrency, formatDate, getCategoryIcon } from '../utils/formatters';
+import { exportTransactionsToCSV } from '../utils/exportUtils';
 import './Transactions.css';
 
 const Transactions = () => {
@@ -105,14 +106,20 @@ const Transactions = () => {
           <p>Gestiona tus ingresos y gastos</p>
         </div>
         
-        <div className="header-actions">
-          <button 
-            className="btn btn-primary"
-            onClick={() => setShowAddForm(true)}
-          >
-            + Nueva Transacción
-          </button>
-        </div>
+                 <div className="header-actions">
+           <button 
+             className="btn btn-secondary"
+             onClick={() => exportTransactionsToCSV(transactions)}
+           >
+             📊 Exportar
+           </button>
+           <button 
+             className="btn btn-primary"
+             onClick={() => setShowAddForm(true)}
+           >
+             + Nueva Transacción
+           </button>
+         </div>
       </div>
 
       <div className="transactions-summary">
