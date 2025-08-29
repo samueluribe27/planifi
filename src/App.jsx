@@ -7,6 +7,7 @@ import Transactions from './pages/Transactions';
 import Budget from './pages/Budget';
 import Goals from './pages/Goals';
 import Reports from './pages/Reports';
+import Settings from './pages/Settings';
 import './App.css';
 
 function App() {
@@ -23,15 +24,16 @@ function App() {
         <div className="app-layout">
           <Sidebar className={sidebarOpen ? 'open' : ''} />
           <main className="main-content">
-            <Routes>
-              <Route path="/" element={<Navigate to="/dashboard" replace />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/transactions" element={<Transactions />} />
-              <Route path="/budget" element={<Budget />} />
-              <Route path="/goals" element={<Goals />} />
-              <Route path="/reports" element={<Reports />} />
-              <Route path="*" element={<Navigate to="/dashboard" replace />} />
-            </Routes>
+                               <Routes>
+                     <Route path="/" element={<Navigate to="/dashboard" replace />} />
+                     <Route path="/dashboard" element={<Dashboard />} />
+                     <Route path="/transactions" element={<Transactions />} />
+                     <Route path="/budget" element={<Budget />} />
+                     <Route path="/goals" element={<Goals />} />
+                     <Route path="/reports" element={<Reports />} />
+                     <Route path="/settings" element={<Settings />} />
+                     <Route path="*" element={<Navigate to="/dashboard" replace />} />
+                   </Routes>
           </main>
         </div>
 
