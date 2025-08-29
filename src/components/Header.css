@@ -17,6 +17,7 @@
   height: 100%;
   max-width: 1400px;
   margin: 0 auto;
+  gap: 20px;
 }
 
 .logo {
@@ -34,6 +35,12 @@
   font-weight: 700;
   color: var(--primary-color);
   margin: 0;
+}
+
+.header-search {
+  flex: 1;
+  max-width: 400px;
+  margin: 0 20px;
 }
 
 .nav-menu {
@@ -147,6 +154,10 @@
   
   .logo h1 {
     font-size: 1.25rem;
+  }
+  
+  .header-search {
+    display: none;
   }
   
   .nav-menu {

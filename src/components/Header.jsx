@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import SearchBar from './SearchBar';
 import './Header.css';
 
 const Header = () => {
@@ -16,6 +17,10 @@ const Header = () => {
           <Link to="/dashboard">
             <h1>Planifi Finanzas Personales</h1>
           </Link>
+        </div>
+        
+        <div className="header-search">
+          <SearchBar />
         </div>
         
         <nav className="nav-menu">
