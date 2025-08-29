@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { useAppContext } from '../context/AppContext';
+import { formatCurrency } from '../utils/formatters';
 import Chart from '../components/Chart';
 import './Reports.css';
 
@@ -45,8 +46,8 @@ const Reports = () => {
         {
           label: 'Ingresos',
           data: [totalIncome * 0.8, totalIncome * 0.9, totalIncome, totalIncome * 0.95, totalIncome, totalIncome],
-          borderColor: '#10b981',
-          backgroundColor: 'rgba(16, 185, 129, 0.1)',
+          borderColor: '#22c55e',
+          backgroundColor: 'rgba(34, 197, 94, 0.1)',
           tension: 0.4,
           fill: false
         },
@@ -74,7 +75,7 @@ const Reports = () => {
       datasets: [{
         data: Object.keys(expenseCategories).length > 0 ? Object.values(expenseCategories) : [1],
         backgroundColor: [
-          '#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6',
+          '#3b82f6', '#22c55e', '#f59e0b', '#ef4444', '#8b5cf6',
           '#06b6d4', '#84cc16', '#f97316', '#ec4899', '#6366f1'
         ].slice(0, Object.keys(expenseCategories).length || 1),
         borderWidth: 2,
@@ -110,8 +111,8 @@ const Reports = () => {
         {
           label: 'Ahorrado',
           data: goals.length > 0 ? goals.map(g => g.saved) : [0],
-          backgroundColor: 'rgba(16, 185, 129, 0.8)',
-          borderColor: '#10b981',
+          backgroundColor: 'rgba(34, 197, 94, 0.8)',
+          borderColor: '#22c55e',
           borderWidth: 1
         },
         {
@@ -166,7 +167,7 @@ const Reports = () => {
           <div className="metric-icon income">📈</div>
           <div className="metric-content">
             <h3>Ingresos Totales</h3>
-            <p className="metric-value">${totalIncome.toLocaleString()}</p>
+            <p className="metric-value">{formatCurrency(totalIncome)}</p>
             <span className="metric-change positive">+5.2% vs período anterior</span>
           </div>
         </div>
@@ -175,7 +176,7 @@ const Reports = () => {
           <div className="metric-icon expense">📉</div>
           <div className="metric-content">
             <h3>Gastos Totales</h3>
-            <p className="metric-value">${totalExpenses.toLocaleString()}</p>
+            <p className="metric-value">{formatCurrency(totalExpenses)}</p>
             <span className="metric-change negative">+2.1% vs período anterior</span>
           </div>
         </div>
@@ -184,7 +185,7 @@ const Reports = () => {
           <div className="metric-icon savings">🎯</div>
           <div className="metric-content">
             <h3>Ahorros Totales</h3>
-            <p className="metric-value">${totalSavings.toLocaleString()}</p>
+            <p className="metric-value">{formatCurrency(totalSavings)}</p>
             <span className="metric-change positive">{savingsRate.toFixed(1)}% de tasa de ahorro</span>
           </div>
         </div>
@@ -193,7 +194,7 @@ const Reports = () => {
           <div className="metric-icon balance">💰</div>
           <div className="metric-content">
             <h3>Balance Neto</h3>
-            <p className="metric-value">${(totalIncome - totalExpenses).toLocaleString()}</p>
+            <p className="metric-value">{formatCurrency(totalIncome - totalExpenses)}</p>
             <span className={`metric-change ${totalIncome - totalExpenses >= 0 ? 'positive' : 'negative'}`}>
               +12.5% vs período anterior
             </span>

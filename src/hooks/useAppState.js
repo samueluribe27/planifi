@@ -4,14 +4,14 @@ const initialState = {
   user: {
     name: 'Usuario',
     email: 'usuario@ejemplo.com',
-    currency: 'USD',
+    currency: 'COP',
     language: 'es'
   },
   transactions: [
     {
       id: 1,
       title: 'Salario',
-      amount: 5000,
+      amount: 2500000,
       type: 'income',
       category: 'Trabajo',
       date: new Date().toISOString(),
@@ -20,7 +20,7 @@ const initialState = {
     {
       id: 2,
       title: 'Supermercado',
-      amount: -200,
+      amount: -150000,
       type: 'expense',
       category: 'Alimentación',
       date: new Date().toISOString(),
@@ -29,7 +29,7 @@ const initialState = {
     {
       id: 3,
       title: 'Gasolina',
-      amount: -80,
+      amount: -80000,
       type: 'expense',
       category: 'Transporte',
       date: new Date().toISOString(),
@@ -38,7 +38,7 @@ const initialState = {
     {
       id: 4,
       title: 'Freelance',
-      amount: 800,
+      amount: 500000,
       type: 'income',
       category: 'Trabajo',
       date: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
@@ -47,7 +47,7 @@ const initialState = {
     {
       id: 5,
       title: 'Restaurante',
-      amount: -120,
+      amount: -120000,
       type: 'expense',
       category: 'Entretenimiento',
       date: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
@@ -58,29 +58,29 @@ const initialState = {
     {
       id: 1,
       category: 'Alimentación',
-      limit: 500,
-      spent: 200,
+      limit: 500000,
+      spent: 150000,
       period: 'month'
     },
     {
       id: 2,
       category: 'Transporte',
-      limit: 300,
-      spent: 80,
+      limit: 300000,
+      spent: 80000,
       period: 'month'
     },
     {
       id: 3,
       category: 'Entretenimiento',
-      limit: 200,
-      spent: 120,
+      limit: 200000,
+      spent: 120000,
       period: 'month'
     },
     {
       id: 4,
       category: 'Servicios',
-      limit: 400,
-      spent: 150,
+      limit: 400000,
+      spent: 150000,
       period: 'month'
     }
   ],
@@ -88,24 +88,24 @@ const initialState = {
     {
       id: 1,
       title: 'Vacaciones',
-      target: 5000,
-      saved: 2000,
+      target: 5000000,
+      saved: 2000000,
       deadline: new Date(Date.now() + 6 * 30 * 24 * 60 * 60 * 1000).toISOString(),
       category: 'Viajes'
     },
     {
       id: 2,
       title: 'Fondo de Emergencia',
-      target: 10000,
-      saved: 3500,
+      target: 10000000,
+      saved: 3500000,
       deadline: new Date(Date.now() + 12 * 30 * 24 * 60 * 60 * 1000).toISOString(),
       category: 'Ahorros'
     },
     {
       id: 3,
       title: 'Nuevo Laptop',
-      target: 2000,
-      saved: 800,
+      target: 3000000,
+      saved: 800000,
       deadline: new Date(Date.now() + 4 * 30 * 24 * 60 * 60 * 1000).toISOString(),
       category: 'Tecnología'
     }

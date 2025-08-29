@@ -11,12 +11,16 @@
 export const formatCurrency = (amount, currency = 'COP') => {
   if (amount === null || amount === undefined) return '$0';
   
+  const numAmount = typeof amount === 'string' ? parseFloat(amount) : amount;
+  
+  if (isNaN(numAmount)) return '$0';
+  
   return new Intl.NumberFormat('es-CO', {
     style: 'currency',
     currency: currency,
     minimumFractionDigits: 0,
     maximumFractionDigits: 0
-  }).format(amount);
+  }).format(numAmount);
 };
 
 /**
@@ -28,11 +32,11 @@ export const formatCurrency = (amount, currency = 'COP') => {
 export const formatPercentage = (value, decimals = 1) => {
   if (value === null || value === undefined) return '0%';
   
-  return new Intl.NumberFormat('es-CO', {
-    style: 'percent',
-    minimumFractionDigits: decimals,
-    maximumFractionDigits: decimals
-  }).format(value / 100);
+  const numValue = typeof value === 'string' ? parseFloat(value) : value;
+  
+  if (isNaN(numValue)) return '0%';
+  
+  return `${numValue.toFixed(decimals)}%`;
 };
 
 /**
@@ -41,12 +45,14 @@ export const formatPercentage = (value, decimals = 1) => {
  * @param {string} locale - Locale para formateo (por defecto 'es-CO')
  * @returns {string} Fecha formateada
  */
-export const formatDate = (date, locale = 'es-CO') => {
+export const formatDate = (date) => {
   if (!date) return '';
   
   const dateObj = new Date(date);
   
-  return new Intl.DateTimeFormat(locale, {
+  if (isNaN(dateObj.getTime())) return '';
+  
+  return new Intl.DateTimeFormat('es-CO', {
     year: 'numeric',
     month: 'long',
     day: 'numeric'
@@ -59,12 +65,14 @@ export const formatDate = (date, locale = 'es-CO') => {
  * @param {string} locale - Locale para formateo (por defecto 'es-CO')
  * @returns {string} Fecha formateada en formato corto
  */
-export const formatShortDate = (date, locale = 'es-CO') => {
+export const formatShortDate = (date) => {
   if (!date) return '';
   
   const dateObj = new Date(date);
   
-  return new Intl.DateTimeFormat(locale, {
+  if (isNaN(dateObj.getTime())) return '';
+  
+  return new Intl.DateTimeFormat('es-CO', {
     month: 'short',
     day: 'numeric'
   }).format(dateObj);
@@ -78,7 +86,11 @@ export const formatShortDate = (date, locale = 'es-CO') => {
 export const formatNumber = (number) => {
   if (number === null || number === undefined) return '0';
   
-  return new Intl.NumberFormat('es-CO').format(number);
+  const numValue = typeof number === 'string' ? parseFloat(number) : number;
+  
+  if (isNaN(numValue)) return '0';
+  
+  return new Intl.NumberFormat('es-CO').format(numValue);
 };
 
 /**
@@ -87,7 +99,14 @@ export const formatNumber = (number) => {
  * @returns {string} Clase CSS para el color
  */
 export const getTransactionColor = (type) => {
-  return type === 'income' ? 'positive' : 'negative';
+  switch (type) {
+    case 'income':
+      return '#22c55e'; // Verde para ingresos
+    case 'expense':
+      return '#ef4444'; // Rojo para gastos
+    default:
+      return '#6b7280'; // Gris por defecto
+  }
 };
 
 /**
@@ -96,20 +115,22 @@ export const getTransactionColor = (type) => {
  * @returns {string} Emoji del icono
  */
 export const getCategoryIcon = (category) => {
-  const icons = {
+  const categoryIcons = {
     'Trabajo': '💼',
-    'Alimentación': '🛒',
+    'Freelance': '💻',
+    'Inversiones': '📈',
+    'Alimentación': '🍽️',
     'Transporte': '🚗',
-    'Entretenimiento': '🎮',
+    'Entretenimiento': '🎬',
+    'Servicios': '🏠',
     'Salud': '🏥',
     'Educación': '📚',
-    'Vivienda': '🏠',
-    'Servicios': '⚡',
     'Ropa': '👕',
     'Viajes': '✈️',
-    'Inversiones': '📈',
-    'Otros': '💰'
+    'Ahorros': '💰',
+    'Tecnología': '💻',
+    'Otros': '📦'
   };
   
-  return icons[category] || '💰';
+  return categoryIcons[category] || '📦';
 };

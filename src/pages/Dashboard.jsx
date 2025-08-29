@@ -1,5 +1,6 @@
 import React from 'react';
 import { useAppContext } from '../context/AppContext';
+import { formatCurrency } from '../utils/formatters';
 import './Dashboard.css';
 
 const Dashboard = () => {
@@ -24,7 +25,7 @@ const Dashboard = () => {
           <div className="metric-icon income">📈</div>
           <div className="metric-content">
             <h3>Ingresos Totales</h3>
-            <p className="metric-value">${totalIncome.toLocaleString()}</p>
+            <p className="metric-value">{formatCurrency(totalIncome)}</p>
           </div>
         </div>
 
@@ -32,7 +33,7 @@ const Dashboard = () => {
           <div className="metric-icon expense">📉</div>
           <div className="metric-content">
             <h3>Gastos Totales</h3>
-            <p className="metric-value">${totalExpenses.toLocaleString()}</p>
+            <p className="metric-value">{formatCurrency(totalExpenses)}</p>
           </div>
         </div>
 
@@ -40,7 +41,7 @@ const Dashboard = () => {
           <div className="metric-icon savings">🎯</div>
           <div className="metric-content">
             <h3>Ahorros Totales</h3>
-            <p className="metric-value">${totalSavings.toLocaleString()}</p>
+            <p className="metric-value">{formatCurrency(totalSavings)}</p>
           </div>
         </div>
 
@@ -48,7 +49,7 @@ const Dashboard = () => {
           <div className="metric-icon balance">💰</div>
           <div className="metric-content">
             <h3>Balance Neto</h3>
-            <p className="metric-value">${balance.toLocaleString()}</p>
+            <p className="metric-value">{formatCurrency(balance)}</p>
           </div>
         </div>
       </div>
@@ -64,7 +65,7 @@ const Dashboard = () => {
                   <span className="transaction-category">{transaction.category}</span>
                 </div>
                 <span className={`transaction-amount ${transaction.type}`}>
-                  {transaction.type === 'income' ? '+' : '-'}${Math.abs(transaction.amount).toLocaleString()}
+                  {transaction.type === 'income' ? '+' : '-'}{formatCurrency(Math.abs(transaction.amount))}
                 </span>
               </div>
             ))}
@@ -81,7 +82,7 @@ const Dashboard = () => {
                   <div className="budget-header">
                     <span className="budget-category">{budget.category}</span>
                     <span className="budget-amount">
-                      ${budget.spent.toLocaleString()} / ${budget.limit.toLocaleString()}
+                      {formatCurrency(budget.spent)} / {formatCurrency(budget.limit)}
                     </span>
                   </div>
                   <div className="budget-progress">
