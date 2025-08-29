@@ -1,54 +1,10 @@
 import React, { useState } from 'react';
+import { useAppContext } from '../context/AppContext';
 import { formatCurrency, formatPercentage, formatDate } from '../utils/formatters';
 import './Goals.css';
 
 const Goals = () => {
-  const [goals, setGoals] = useState([
-    {
-      id: 1,
-      title: 'Fondo de Emergencia',
-      description: 'Ahorrar 6 meses de gastos para emergencias',
-      targetAmount: 5000000,
-      currentAmount: 3200000,
-      deadline: '2024-12-31',
-      category: 'Ahorro',
-      icon: '🛡️',
-      priority: 'high'
-    },
-    {
-      id: 2,
-      title: 'Viaje a Europa',
-      description: 'Ahorrar para un viaje de 3 semanas por Europa',
-      targetAmount: 15000000,
-      currentAmount: 8500000,
-      deadline: '2025-06-15',
-      category: 'Viajes',
-      icon: '✈️',
-      priority: 'medium'
-    },
-    {
-      id: 3,
-      title: 'Entrada para Casa',
-      description: 'Ahorrar para la entrada de una casa propia',
-      targetAmount: 50000000,
-      currentAmount: 12000000,
-      deadline: '2026-03-01',
-      category: 'Vivienda',
-      icon: '🏠',
-      priority: 'high'
-    },
-    {
-      id: 4,
-      title: 'Carrera de Programación',
-      description: 'Invertir en cursos y certificaciones',
-      targetAmount: 3000000,
-      currentAmount: 1800000,
-      deadline: '2024-08-30',
-      category: 'Educación',
-      icon: '💻',
-      priority: 'medium'
-    }
-  ]);
+  const { goals, addGoal, deleteGoal } = useAppContext();
 
   const [showAddForm, setShowAddForm] = useState(false);
   const [newGoal, setNewGoal] = useState({
@@ -61,10 +17,7 @@ const Goals = () => {
     priority: 'medium'
   });
 
-  const categories = [
-    'Ahorro', 'Viajes', 'Vivienda', 'Educación', 'Inversiones', 
-    'Negocio', 'Salud', 'Entretenimiento', 'Otros'
-  ];
+
 
   const priorities = [
     { value: 'low', label: 'Baja', color: 'success' },
@@ -77,7 +30,7 @@ const Goals = () => {
   };
 
   const calculateProgress = (current, target) => {
-    return Math.min((current / target) * 100, 100);
+    return target > 0 ? Math.min((current / target) * 100, 100) : 0;
   };
 
   const calculateDaysRemaining = (deadline) => {
@@ -106,14 +59,14 @@ const Goals = () => {
   const handleAddGoal = (e) => {
     e.preventDefault();
     const goal = {
-      id: Date.now(),
       ...newGoal,
-      targetAmount: parseFloat(newGoal.targetAmount),
-      currentAmount: parseFloat(newGoal.currentAmount),
-      icon: getGoalIcon(newGoal.category)
+      target: parseFloat(newGoal.targetAmount),
+      saved: parseFloat(newGoal.currentAmount) || 0,
+      icon: getGoalIcon(newGoal.category),
+      color: '#3B82F6'
     };
     
-    setGoals([...goals, goal]);
+    addGoal(goal);
     setNewGoal({
       title: '',
       description: '',
@@ -127,7 +80,7 @@ const Goals = () => {
   };
 
   const handleDeleteGoal = (id) => {
-    setGoals(goals.filter(g => g.id !== id));
+    deleteGoal(id);
   };
 
   const handleUpdateProgress = (id, newAmount) => {
@@ -155,9 +108,9 @@ const Goals = () => {
 
   const totalGoals = goals.length;
   const completedGoals = goals.filter(g => calculateProgress(g.currentAmount, g.targetAmount) >= 100).length;
-  const totalTargetAmount = goals.reduce((sum, goal) => sum + goal.targetAmount, 0);
-  const totalCurrentAmount = goals.reduce((sum, goal) => sum + goal.currentAmount, 0);
-  const overallProgress = (totalCurrentAmount / totalTargetAmount) * 100;
+  const totalTargetAmount = goals.reduce((sum, goal) => sum + goal.target, 0);
+  const totalCurrentAmount = goals.reduce((sum, goal) => sum + goal.saved, 0);
+  const overallProgress = totalTargetAmount > 0 ? (totalCurrentAmount / totalTargetAmount) * 100 : 0;
 
   return (
     <div className="goals-page">
@@ -213,7 +166,7 @@ const Goals = () => {
         
         <div className="goals-grid">
           {goals.map(goal => {
-            const progress = calculateProgress(goal.currentAmount, goal.targetAmount);
+            const progress = calculateProgress(goal.saved, goal.target);
             const daysRemaining = calculateDaysRemaining(goal.deadline);
             const statusColor = getStatusColor(progress, daysRemaining);
             const statusText = getStatusText(progress, daysRemaining);
@@ -247,15 +200,15 @@ const Goals = () => {
                   <div className="amount-info">
                     <div className="amount-row">
                       <span>Meta:</span>
-                      <span>{formatCurrency(goal.targetAmount)}</span>
+                      <span>{formatCurrency(goal.target)}</span>
                     </div>
                     <div className="amount-row">
                       <span>Ahorrado:</span>
-                      <span>{formatCurrency(goal.currentAmount)}</span>
+                      <span>{formatCurrency(goal.saved)}</span>
                     </div>
                     <div className="amount-row">
                       <span>Faltante:</span>
-                      <span>{formatCurrency(goal.targetAmount - goal.currentAmount)}</span>
+                      <span>{formatCurrency(goal.target - goal.saved)}</span>
                     </div>
                   </div>
                   
@@ -286,7 +239,7 @@ const Goals = () => {
                       type="number"
                       placeholder="Actualizar progreso"
                       min="0"
-                      max={goal.targetAmount}
+                      max={goal.target}
                       step="1000"
                       onChange={(e) => handleUpdateProgress(goal.id, parseFloat(e.target.value) || 0)}
                     />
