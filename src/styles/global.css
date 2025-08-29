@@ -2,32 +2,53 @@
 :root {
   --bg-primary: #ffffff;
   --bg-secondary: #f8fafc;
-  --bg-tertiary: #f1f5f9;
   --text-primary: #1e293b;
   --text-secondary: #64748b;
-  --text-muted: #94a3b8;
   --border-color: #e2e8f0;
   --border-light: #f1f5f9;
-  --primary-color: #3b82f6;
-  --primary-hover: #2563eb;
-  --success-color: #10b981;
+  
+  /* Colores principales - Verde y blanco */
+  --primary-color: #22c55e;
+  --primary-light: #4ade80;
+  --primary-dark: #16a34a;
+  --success-color: #22c55e;
   --warning-color: #f59e0b;
   --danger-color: #ef4444;
-  --info-color: #06b6d4;
+  --info-color: #3b82f6;
+  
+  /* Sombras */
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
   
-  /* Variables específicas para móviles */
+  /* Variables móviles */
   --header-height: 60px;
   --sidebar-width: 280px;
-  --mobile-padding: 16px;
+  --mobile-padding: 1rem;
   --mobile-border-radius: 12px;
-  --mobile-font-size: 16px; /* Previene zoom en iOS */
+  --mobile-font-size: 14px;
 }
 
-/* Reset y estilos base */
+/* Variables CSS para tema oscuro */
+[data-theme="dark"] {
+  --bg-primary: #0f172a;
+  --bg-secondary: #1e293b;
+  --text-primary: #f8fafc;
+  --text-secondary: #cbd5e1;
+  --border-color: #334155;
+  --border-light: #475569;
+  
+  /* Colores principales - Verde y blanco (ajustados para modo oscuro) */
+  --primary-color: #4ade80;
+  --primary-light: #86efac;
+  --primary-dark: #22c55e;
+  --success-color: #4ade80;
+  --warning-color: #fbbf24;
+  --danger-color: #f87171;
+  --info-color: #60a5fa;
+}
+
+/* Reset CSS */
 * {
   margin: 0;
   padding: 0;
@@ -35,28 +56,30 @@
 }
 
 html {
-  font-size: 16px; /* Base para rem */
-  -webkit-text-size-adjust: 100%; /* Previene zoom en iOS */
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-  background-color: var(--bg-secondary);
-  color: var(--text-primary);
-  line-height: 1.6;
-  font-size: var(--mobile-font-size);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  overflow-x: hidden; /* Previene scroll horizontal */
-}
-
-/* Touch-friendly buttons */
-button, input, select, textarea {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
   font-size: var(--mobile-font-size);
-  min-height: 44px; /* Touch target mínimo */
+  line-height: 1.5;
+  overflow-x: hidden;
 }
 
-/* Utilidades */
+/* Elementos interactivos */
+button, input, select, textarea {
+  font-family: inherit;
+  min-height: 44px;
+}
+
+/* Contenedor principal */
 .container {
   width: 100%;
   max-width: 100%;
@@ -64,66 +87,62 @@ button, input, select, textarea {
   padding: 0 var(--mobile-padding);
 }
 
+/* Tarjetas */
 .card {
   background: var(--bg-primary);
   border-radius: var(--mobile-border-radius);
-  box-shadow: var(--shadow-sm);
   border: 1px solid var(--border-color);
-  padding: 1rem;
-  margin-bottom: 1rem;
+  box-shadow: var(--shadow-sm);
+  padding: var(--mobile-padding);
 }
 
+/* Botones */
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 0.5rem;
   padding: 0.75rem 1rem;
-  border-radius: var(--mobile-border-radius);
+  border: none;
+  border-radius: 8px;
+  font-size: 0.875rem;
   font-weight: 500;
   text-decoration: none;
-  border: none;
   cursor: pointer;
   transition: all 0.2s ease;
-  font-size: 0.875rem;
   min-height: 44px;
-  touch-action: manipulation; /* Mejora respuesta táctil */
 }
 
 .btn-primary {
-  background-color: var(--primary-color);
+  background: var(--primary-color);
   color: white;
 }
 
 .btn-primary:hover {
-  background-color: var(--primary-hover);
+  background: var(--primary-dark);
 }
 
 .btn-secondary {
-  background-color: var(--bg-secondary);
+  background: var(--bg-primary);
   color: var(--text-primary);
   border: 1px solid var(--border-color);
 }
 
 .btn-secondary:hover {
-  background-color: var(--border-color);
+  background: var(--bg-secondary);
 }
 
-/* Grid responsive para móviles */
+.btn-sm {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.75rem;
+  min-height: 36px;
+}
+
+/* Utilidades de grid */
 .grid {
   display: grid;
-  gap: 1rem;
-  grid-template-columns: 1fr;
 }
 
-.grid-2 {
-  grid-template-columns: repeat(2, 1fr);
-}
-
-.grid-3 {
-  grid-template-columns: repeat(3, 1fr);
-}
-
-/* Flexbox utilities */
 .flex {
   display: flex;
 }
@@ -136,78 +155,62 @@ button, input, select, textarea {
   align-items: center;
 }
 
+.justify-center {
+  justify-content: center;
+}
+
 .justify-between {
   justify-content: space-between;
 }
 
-.gap-2 {
-  gap: 0.5rem;
-}
+.gap-1 { gap: 0.25rem; }
+.gap-2 { gap: 0.5rem; }
+.gap-3 { gap: 0.75rem; }
+.gap-4 { gap: 1rem; }
 
-.gap-4 {
-  gap: 1rem;
-}
+/* Utilidades de texto */
+.text-center { text-align: center; }
+.text-left { text-align: left; }
+.text-right { text-align: right; }
 
-/* Text utilities */
-.text-sm {
-  font-size: 0.875rem;
-}
+.text-sm { font-size: 0.875rem; }
+.text-xs { font-size: 0.75rem; }
 
-.text-lg {
-  font-size: 1.125rem;
-}
+.font-bold { font-weight: 700; }
+.font-semibold { font-weight: 600; }
+.font-medium { font-weight: 500; }
 
-.font-semibold {
-  font-weight: 600;
-}
+/* Utilidades de espaciado */
+.p-1 { padding: 0.25rem; }
+.p-2 { padding: 0.5rem; }
+.p-3 { padding: 0.75rem; }
+.p-4 { padding: 1rem; }
 
-.text-center {
-  text-align: center;
-}
+.m-1 { margin: 0.25rem; }
+.m-2 { margin: 0.5rem; }
+.m-3 { margin: 0.75rem; }
+.m-4 { margin: 1rem; }
 
-/* Spacing utilities */
-.mb-2 {
-  margin-bottom: 0.5rem;
-}
-
-.mb-4 {
-  margin-bottom: 1rem;
-}
-
-.mt-4 {
-  margin-top: 1rem;
-}
-
-.p-4 {
-  padding: 1rem;
-}
-
-/* Responsive breakpoints */
+/* Breakpoints responsive */
 @media (min-width: 640px) {
   .container {
     max-width: 640px;
+    padding: 0 1.5rem;
   }
   
-  .grid-2 {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  
-  .grid-3 {
-    grid-template-columns: repeat(3, 1fr);
+  .card {
+    padding: 1.5rem;
   }
 }
 
 @media (min-width: 768px) {
   .container {
     max-width: 768px;
+    padding: 0 2rem;
   }
   
-  .card {
-    padding: 1.5rem;
-  }
-  
-  .btn {
-    padding: 0.75rem 1.5rem;
+  body {
+    font-size: 16px;
   }
 }
 
@@ -215,14 +218,26 @@ button, input, select, textarea {
   .container {
     max-width: 1024px;
   }
-  
-  .grid-3 {
-    grid-template-columns: repeat(3, 1fr);
-  }
 }
 
 @media (min-width: 1280px) {
   .container {
     max-width: 1280px;
+  }
+}
+
+/* Ajustes para landscape en móviles */
+@media (max-height: 500px) and (orientation: landscape) {
+  .container {
+    padding: 0 0.75rem;
+  }
+  
+  .card {
+    padding: 0.75rem;
+  }
+  
+  .btn {
+    min-height: 40px;
+    padding: 0.5rem 0.75rem;
   }
 }

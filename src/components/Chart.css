@@ -1,126 +1,144 @@
-/*
- * Estilos del Contenedor del Gráfico
- * Este es el contenedor principal que envuelve todo el componente del gráfico.
- */
+/* Mobile-first Chart styles */
 .chart-container {
-  /* Utiliza una variable CSS para el color de fondo, facilitando el cambio de tema. */
   background: var(--bg-primary);
-  /* Un borde sutil para darle al contenedor un contorno definido. */
+  border-radius: var(--mobile-border-radius);
   border: 1px solid var(--border-color);
-  /* Esquinas redondeadas para una apariencia moderna y suave. */
-  border-radius: 12px;
-  /* Espaciado interno para evitar que el contenido toque los bordes. */
-  padding: 20px;
-  /* Una pequeña sombra que crea un efecto de "tarjeta" elevada. */
   box-shadow: var(--shadow-sm);
-  /* Necesario para posicionar elementos hijos (como la superposición de carga) de forma relativa a este contenedor. */
-  position: relative;
+  overflow: hidden;
+  transition: all 0.2s ease;
 }
 
-/*
- * Estilos del Título del Gráfico
- * Define el estilo del encabezado del gráfico.
- */
+.chart-container:hover {
+  box-shadow: var(--shadow-md);
+}
+
 .chart-title {
-  /* Elimina los márgenes predeterminados y añade un margen inferior específico para el espaciado. */
-  margin: 0 0 16px 0;
-  /* Establece el tamaño de la fuente para el título. */
-  font-size: 18px;
-  /* Hace que el texto del título sea más grueso. */
+  font-size: 1rem;
   font-weight: 600;
-  /* Utiliza una variable CSS para el color del texto. */
   color: var(--text-primary);
-  /* Centra el texto del título horizontalmente. */
+  margin: 0;
+  padding: 1rem 1rem 0.5rem 1rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.chart-wrapper {
+  position: relative;
+  padding: 1rem;
+  min-height: 200px;
+}
+
+.chart-wrapper canvas {
+  max-width: 100%;
+  height: auto !important;
+}
+
+/* Loading state */
+.chart-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  color: var(--text-secondary);
   text-align: center;
 }
 
-/*
- * Estilos del Contenedor del Gráfico
- * Este contenedor alberga la visualización real del gráfico (por ejemplo, un gráfico de barras o de líneas).
- */
-.chart-wrapper {
-  /* Establece la posición relativa para un posible posicionamiento interno. */
-  position: relative;
-  /* Asegura que el gráfico ocupe el ancho completo de su contenedor. */
-  width: 100%;
-  /* Calcula la altura para llenar el espacio restante, considerando la altura y el margen del título. */
-  height: calc(100% - 40px);
-}
-
-/*
- * Estilos del Estado de Carga
- * Estos estilos se aplican cuando los datos del gráfico se están cargando.
- */
-.chart-loading {
-  /* Utiliza flexbox para centrar fácilmente el contenido vertical y horizontalmente. */
-  display: flex;
-  /* Organiza a los elementos hijos (spinner y texto) en una columna. */
-  flex-direction: column;
-  /* Centra los elementos horizontalmente. */
-  align-items: center;
-  /* Centra los elementos verticalmente. */
-  justify-content: center;
-  /* Hace que la superposición de carga ocupe la altura completa del contenedor. */
-  height: 100%;
-  /* Establece el color del texto para el mensaje de carga. */
-  color: var(--text-secondary);
-}
-
-/*
- * Estilos del Spinner de Carga
- * Define el estilo de la animación de rotación.
- */
 .loading-spinner {
-  /* Establece las dimensiones del spinner. */
-  width: 40px;
-  height: 40px;
-  /* Crea un borde con una sección transparente. */
+  width: 32px;
+  height: 32px;
   border: 3px solid var(--border-color);
-  /* El borde superior tiene color, creando el "arco" visual del spinner. */
   border-top: 3px solid var(--primary-color);
-  /* Hace que el elemento sea perfectamente circular. */
   border-radius: 50%;
-  /* Aplica la animación "spin". Se ejecuta durante 1 segundo, de forma lineal (velocidad constante) y se repite infinitamente. */
   animation: spin 1s linear infinite;
-  /* Añade espacio debajo del spinner. */
-  margin-bottom: 16px;
+  margin-bottom: 0.5rem;
 }
 
-/*
- * Animación de Keyframe
- * Define la rotación para el spinner de carga.
- */
 @keyframes spin {
-  /* Inicia la rotación en 0 grados. */
   0% { transform: rotate(0deg); }
-  /* Termina la rotación en 360 grados (un círculo completo). */
   100% { transform: rotate(360deg); }
 }
 
-/*
- * Estilos del Texto de Carga
- * Define el estilo del texto que aparece junto al spinner.
- */
 .chart-loading p {
-  /* Elimina el margen predeterminado del párrafo. */
+  font-size: 0.875rem;
   margin: 0;
-  /* Establece el tamaño de la fuente para el texto de carga. */
-  font-size: 14px;
 }
 
-/*
- * Diseño Responsivo
- * Estos estilos se aplican a pantallas con un ancho máximo de 768px (por ejemplo, tabletas y teléfonos móviles).
- */
-@media (max-width: 768px) {
-  /* Reduce el espaciado del contenedor principal para pantallas más pequeñas. */
-  .chart-container {
-    padding: 16px;
-  }
+/* Error state */
+.chart-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  color: var(--danger-color);
+  text-align: center;
+  padding: 1rem;
+}
 
-  /* Reduce el tamaño de la fuente y el margen inferior del título para un mejor ajuste en dispositivos móviles. */
+.error-icon {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.chart-error p {
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin: 0 0 0.25rem 0;
+}
+
+.chart-error small {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  max-width: 200px;
+  word-wrap: break-word;
+}
+
+/* Responsive breakpoints */
+@media (min-width: 768px) {
   .chart-title {
-    font-size: 16px;
-    margin-bottom: 12px;
+    font-size: 1.125rem;
+    padding: 1.25rem 1.25rem 0.75rem 1.25rem;
+  }
+  
+  .chart-wrapper {
+    padding: 1.25rem;
+    min-height: 250px;
+  }
+  
+  .chart-loading,
+  .chart-error {
+    height: 250px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .chart-wrapper {
+    padding: 1.5rem;
+    min-height: 300px;
+  }
+  
+  .chart-loading,
+  .chart-error {
+    height: 300px;
+  }
+}
+
+/* Landscape mobile adjustments */
+@media (max-height: 500px) and (orientation: landscape) {
+  .chart-wrapper {
+    min-height: 150px;
+  }
+  
+  .chart-loading,
+  .chart-error {
+    height: 150px;
+  }
+  
+  .chart-title {
+    padding: 0.75rem 0.75rem 0.5rem 0.75rem;
+  }
+  
+  .chart-wrapper {
+    padding: 0.75rem;
   }
 }

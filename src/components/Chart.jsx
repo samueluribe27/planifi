@@ -1,7 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
-
-// Este componente reutilizable utiliza Chart.js para renderizar gráficos dinámicamente.
-// Gestiona el estado de carga y el ciclo de vida del gráfico, asegurando que se inicialice, actualice y limpie correctamente.
+import './Chart.css';
 
 const Chart = ({ 
   type = 'line', 
@@ -12,46 +10,119 @@ const Chart = ({
   className = '',
   onChartClick = null 
 }) => {
-  // `useRef` para referenciar el elemento <canvas> del DOM.
   const canvasRef = useRef(null);
-  // `useState` para almacenar la instancia de Chart.js y el estado de carga del componente.
   const [chart, setChart] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Este efecto se encarga de la inicialización y actualización del gráfico.
-  // Importa Chart.js dinámicamente, destruye cualquier instancia de gráfico anterior y crea una nueva
-  // cada vez que las dependencias (type, data, options, etc.) cambian.
   useEffect(() => {
     const loadChart = async () => {
       try {
-        // Importación dinámica de Chart.js para optimizar el rendimiento de la carga.
+        setIsLoading(true);
+        setError(null);
+        
+        // Verificar que tenemos datos válidos
+        if (!data || !data.labels || !data.datasets) {
+          console.log('Chart data:', data);
+          setError('Datos del gráfico no válidos');
+          setIsLoading(false);
+          return;
+        }
+        
+        // Importar Chart.js dinámicamente
         const { Chart: ChartJS, registerables } = await import('chart.js/auto');
         ChartJS.register(...registerables);
         
         if (canvasRef.current) {
           const ctx = canvasRef.current.getContext('2d');
           
-          // Destruye el gráfico existente para evitar fugas de memoria antes de crear uno nuevo.
+          // Destruir gráfico existente
           if (chart) {
             chart.destroy();
           }
           
-          // Crea una nueva instancia del gráfico con las propiedades proporcionadas.
+          // Configuración por defecto
+          const defaultOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                display: true,
+                position: 'top',
+                labels: {
+                  usePointStyle: true,
+                  padding: 15,
+                  font: {
+                    size: 12
+                  }
+                }
+              },
+              tooltip: {
+                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                titleColor: 'white',
+                bodyColor: 'white',
+                borderColor: 'rgba(255, 255, 255, 0.1)',
+                borderWidth: 1,
+                cornerRadius: 8,
+                displayColors: true,
+                padding: 12
+              }
+            },
+            scales: {
+              x: {
+                grid: {
+                  display: false
+                },
+                ticks: {
+                  font: {
+                    size: 11
+                  }
+                }
+              },
+              y: {
+                grid: {
+                  color: 'rgba(0, 0, 0, 0.05)'
+                },
+                ticks: {
+                  font: {
+                    size: 11
+                  }
+                }
+              }
+            },
+            elements: {
+              point: {
+                radius: 4,
+                hoverRadius: 6
+              },
+              line: {
+                tension: 0.4
+              }
+            },
+            interaction: {
+              intersect: false,
+              mode: 'index'
+            }
+          };
+          
+          // Crear nuevo gráfico
           const newChart = new ChartJS(ctx, {
             type,
             data,
             options: {
+              ...defaultOptions,
               ...options,
               onClick: onChartClick
             }
           });
           
-          // Almacena la nueva instancia del gráfico y actualiza el estado de carga.
           setChart(newChart);
           setIsLoading(false);
+          console.log('Chart created successfully:', type, data);
         }
       } catch (error) {
         console.error('Error loading chart:', error);
+        setError(error.message);
         setIsLoading(false);
       }
     };
@@ -59,8 +130,7 @@ const Chart = ({
     loadChart();
   }, [type, data, options, onChartClick]);
 
-  // Este efecto de limpieza se ejecuta cuando el componente se desmonta.
-  // Asegura que la instancia de Chart.js sea destruida para liberar recursos del navegador.
+  // Limpiar al desmontar
   useEffect(() => {
     return () => {
       if (chart) {
@@ -69,7 +139,6 @@ const Chart = ({
     };
   }, [chart]);
 
-  // Muestra una animación de carga mientras los recursos del gráfico se están cargando.
   if (isLoading) {
     return (
       <div className={`chart-container ${className}`} style={{ height }}>
@@ -81,7 +150,18 @@ const Chart = ({
     );
   }
 
-  // Renderiza el título y el elemento <canvas> una vez que el gráfico está listo para ser visualizado.
+  if (error) {
+    return (
+      <div className={`chart-container ${className}`} style={{ height }}>
+        <div className="chart-error">
+          <div className="error-icon">⚠️</div>
+          <p>Error al cargar el gráfico</p>
+          <small>{error}</small>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className={`chart-container ${className}`} style={{ height }}>
       {title && <h3 className="chart-title">{title}</h3>}

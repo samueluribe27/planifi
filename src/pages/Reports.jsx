@@ -1,24 +1,11 @@
 import React, { useState, useMemo } from 'react';
 import { useAppContext } from '../context/AppContext';
-import { formatCurrency, formatPercentage, formatDate } from '../utils/formatters';
-import { exportTransactionsToCSV, exportBudgetsToCSV, exportGoalsToCSV, exportFinancialReport } from '../utils/exportUtils';
 import Chart from '../components/Chart';
-import {
-  generateLineChartData,
-  generateDoughnutChartData,
-  generateBarChartData,
-  generateGoalsProgressData,
-  generateFinancialSummary,
-  generateTrendStats,
-  formatChartData,
-  generateChartOptions
-} from '../utils/chartUtils';
 import './Reports.css';
 
 const Reports = () => {
   const { transactions, budgets, goals } = useAppContext();
   const [selectedPeriod, setSelectedPeriod] = useState('month');
-  const [selectedReport, setSelectedReport] = useState('overview');
 
   const periods = [
     { value: 'week', label: 'Esta Semana' },
@@ -27,21 +14,14 @@ const Reports = () => {
     { value: 'year', label: 'Este Año' }
   ];
 
-  const reports = [
-    { value: 'overview', label: 'Resumen General' },
-    { value: 'income', label: 'Análisis de Ingresos' },
-    { value: 'expenses', label: 'Análisis de Gastos' },
-    { value: 'savings', label: 'Análisis de Ahorros' }
-  ];
-
   // Calcular datos reales desde el estado global
-  const getTotalIncome = (period) => {
+  const getTotalIncome = () => {
     return transactions
       .filter(t => t.type === 'income')
       .reduce((sum, t) => sum + t.amount, 0);
   };
 
-  const getTotalExpenses = (period) => {
+  const getTotalExpenses = () => {
     return transactions
       .filter(t => t.type === 'expense')
       .reduce((sum, t) => sum + Math.abs(t.amount), 0);
@@ -51,319 +31,124 @@ const Reports = () => {
     return goals.reduce((sum, goal) => sum + goal.saved, 0);
   };
 
-  const getTopExpenseCategories = () => {
-    const categoryTotals = {};
-    transactions
-      .filter(t => t.type === 'expense')
-      .forEach(t => {
-        categoryTotals[t.category] = (categoryTotals[t.category] || 0) + Math.abs(t.amount);
-      });
-    
-    return Object.entries(categoryTotals)
-      .map(([name, amount]) => ({ name, amount }))
-      .sort((a, b) => b.amount - a.amount)
-      .slice(0, 5)
-      .map(item => ({
-        ...item,
-        percentage: getTotalExpenses() > 0 ? (item.amount / getTotalExpenses()) * 100 : 0
-      }));
-  };
-
-  const totalIncome = getTotalIncome(selectedPeriod);
-  const totalExpenses = getTotalExpenses(selectedPeriod);
+  const totalIncome = getTotalIncome();
+  const totalExpenses = getTotalExpenses();
   const totalSavings = getTotalSavings();
   const savingsRate = totalIncome > 0 ? (totalSavings / totalIncome) * 100 : 0;
-  const topCategories = getTopExpenseCategories();
 
   // Generar datos de gráficos usando useMemo para optimización
   const chartData = useMemo(() => {
-    const lineData = generateLineChartData(transactions, selectedPeriod);
-    const doughnutData = generateDoughnutChartData(transactions, 'category');
-    const barData = generateBarChartData(transactions, budgets);
-    const goalsData = generateGoalsProgressData(goals);
-    const summary = generateFinancialSummary(transactions, budgets, goals);
-    const trends = generateTrendStats(transactions, selectedPeriod);
+    // Datos para gráfico de líneas
+    const lineData = {
+      labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'],
+      datasets: [
+        {
+          label: 'Ingresos',
+          data: [totalIncome * 0.8, totalIncome * 0.9, totalIncome, totalIncome * 0.95, totalIncome, totalIncome],
+          borderColor: '#10b981',
+          backgroundColor: 'rgba(16, 185, 129, 0.1)',
+          tension: 0.4,
+          fill: false
+        },
+        {
+          label: 'Gastos',
+          data: [totalExpenses * 0.7, totalExpenses * 0.8, totalExpenses, totalExpenses * 0.9, totalExpenses * 0.85, totalExpenses],
+          borderColor: '#ef4444',
+          backgroundColor: 'rgba(239, 68, 68, 0.1)',
+          tension: 0.4,
+          fill: false
+        }
+      ]
+    };
+
+    // Datos para gráfico de dona (categorías de gastos)
+    const expenseCategories = {};
+    transactions
+      .filter(t => t.type === 'expense')
+      .forEach(t => {
+        expenseCategories[t.category] = (expenseCategories[t.category] || 0) + Math.abs(t.amount);
+      });
+
+    const doughnutData = {
+      labels: Object.keys(expenseCategories).length > 0 ? Object.keys(expenseCategories) : ['Sin datos'],
+      datasets: [{
+        data: Object.keys(expenseCategories).length > 0 ? Object.values(expenseCategories) : [1],
+        backgroundColor: [
+          '#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6',
+          '#06b6d4', '#84cc16', '#f97316', '#ec4899', '#6366f1'
+        ].slice(0, Object.keys(expenseCategories).length || 1),
+        borderWidth: 2,
+        borderColor: '#ffffff'
+      }]
+    };
+
+    // Datos para gráfico de barras (presupuestos)
+    const barData = {
+      labels: budgets.length > 0 ? budgets.map(b => b.category) : ['Sin presupuestos'],
+      datasets: [
+        {
+          label: 'Presupuesto',
+          data: budgets.length > 0 ? budgets.map(b => b.limit) : [0],
+          backgroundColor: 'rgba(59, 130, 246, 0.8)',
+          borderColor: '#3b82f6',
+          borderWidth: 1
+        },
+        {
+          label: 'Gastado',
+          data: budgets.length > 0 ? budgets.map(b => b.spent) : [0],
+          backgroundColor: 'rgba(239, 68, 68, 0.8)',
+          borderColor: '#ef4444',
+          borderWidth: 1
+        }
+      ]
+    };
+
+    // Datos para gráfico de metas
+    const goalsData = {
+      labels: goals.length > 0 ? goals.map(g => g.title) : ['Sin metas'],
+      datasets: [
+        {
+          label: 'Ahorrado',
+          data: goals.length > 0 ? goals.map(g => g.saved) : [0],
+          backgroundColor: 'rgba(16, 185, 129, 0.8)',
+          borderColor: '#10b981',
+          borderWidth: 1
+        },
+        {
+          label: 'Meta',
+          data: goals.length > 0 ? goals.map(g => g.target) : [0],
+          backgroundColor: 'rgba(59, 130, 246, 0.3)',
+          borderColor: '#3b82f6',
+          borderWidth: 1,
+          borderDash: [5, 5]
+        }
+      ]
+    };
 
     return {
       lineData,
       doughnutData,
       barData,
-      goalsData,
-      summary,
-      trends
+      goalsData
     };
-  }, [transactions, budgets, goals, selectedPeriod]);
-
-  const reportData = {
-    overview: {
-      totalIncome,
-      totalExpenses,
-      totalSavings,
-      savingsRate,
-      avgDailyExpense: totalExpenses / 30,
-      topCategories
-    },
-    income: {
-      total: totalIncome,
-      sources: [
-        { name: 'Salario Principal', amount: totalIncome * 0.8, percentage: 80 },
-        { name: 'Freelance', amount: totalIncome * 0.15, percentage: 15 },
-        { name: 'Inversiones', amount: totalIncome * 0.05, percentage: 5 }
-      ],
-      trend: [
-        { month: 'Ene', amount: totalIncome * 0.9 },
-        { month: 'Feb', amount: totalIncome * 0.95 },
-        { month: 'Mar', amount: totalIncome },
-        { month: 'Abr', amount: totalIncome * 0.98 },
-        { month: 'May', amount: totalIncome },
-        { month: 'Jun', amount: totalIncome }
-      ]
-    },
-    expenses: {
-      total: totalExpenses,
-      categories: topCategories.map(cat => ({
-        ...cat,
-        trend: 'stable'
-      }))
-    },
-    savings: {
-      total: totalSavings,
-      goal: goals.reduce((sum, goal) => sum + goal.target, 0),
-      percentage: goals.reduce((sum, goal) => sum + goal.target, 0) > 0 ? 
-        (totalSavings / goals.reduce((sum, goal) => sum + goal.target, 0)) * 100 : 0,
-      monthlyAverage: totalSavings / 6,
-      history: [
-        { month: 'Ene', saved: totalSavings * 0.8 },
-        { month: 'Feb', saved: totalSavings * 0.85 },
-        { month: 'Mar', saved: totalSavings * 0.9 },
-        { month: 'Abr', saved: totalSavings * 0.95 },
-        { month: 'May', saved: totalSavings * 0.98 },
-        { month: 'Jun', saved: totalSavings }
-      ]
-    }
-  };
-
-  const currentData = reportData[selectedReport];
-
-  const renderOverview = () => (
-    <div className="overview-section">
-      <div className="metrics-grid">
-        <div className="metric-card income">
-          <h3>Ingresos Totales</h3>
-          <p>{formatCurrency(currentData.totalIncome)}</p>
-          <span className="trend positive">+5.2% vs mes anterior</span>
-        </div>
-        <div className="metric-card expenses">
-          <h3>Gastos Totales</h3>
-          <p>{formatCurrency(currentData.totalExpenses)}</p>
-          <span className="trend negative">+2.1% vs mes anterior</span>
-        </div>
-        <div className="metric-card savings">
-          <h3>Ahorros</h3>
-          <p>{formatCurrency(currentData.totalSavings)}</p>
-          <span className="trend positive">+12.5% vs mes anterior</span>
-        </div>
-        <div className="metric-card rate">
-          <h3>Tasa de Ahorro</h3>
-          <p>{formatPercentage(currentData.savingsRate)}</p>
-          <span className="trend positive">+1.8% vs mes anterior</span>
-        </div>
-      </div>
-
-      <div className="charts-section">
-        <div className="chart-container">
-          <h3>Distribución de Gastos</h3>
-          <div className="pie-chart">
-            {currentData.topCategories.map((category, index) => (
-              <div key={category.name} className="pie-segment">
-                <div 
-                  className="segment"
-                  style={{
-                    transform: `rotate(${index * 72}deg)`,
-                    background: `hsl(${index * 60}, 70%, 60%)`
-                  }}
-                ></div>
-                <div className="segment-label">
-                  <span className="category-name">{category.name}</span>
-                  <span className="category-amount">{formatCurrency(category.amount)}</span>
-                  <span className="category-percentage">{formatPercentage(category.percentage)}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="chart-container">
-          <h3>Gastos por Categoría</h3>
-          <div className="bar-chart">
-            {currentData.topCategories.map((category, index) => (
-              <div key={category.name} className="bar-item">
-                <div className="bar-label">{category.name}</div>
-                <div className="bar-container">
-                  <div 
-                    className="bar-fill"
-                    style={{ 
-                      width: `${category.percentage}%`,
-                      background: `hsl(${index * 60}, 70%, 60%)`
-                    }}
-                  ></div>
-                  <span className="bar-value">{formatCurrency(category.amount)}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-
-  const renderIncomeAnalysis = () => (
-    <div className="income-analysis">
-      <div className="income-sources">
-        <h3>Fuentes de Ingresos</h3>
-        <div className="sources-list">
-          {currentData.sources.map((source, index) => (
-            <div key={source.name} className="source-item">
-              <div className="source-info">
-                <span className="source-name">{source.name}</span>
-                <span className="source-amount">{formatCurrency(source.amount)}</span>
-              </div>
-              <div className="source-bar">
-                <div 
-                  className="source-fill"
-                  style={{ 
-                    width: `${source.percentage}%`,
-                    background: `hsl(${index * 90}, 70%, 60%)`
-                  }}
-                ></div>
-                <span className="source-percentage">{formatPercentage(source.percentage)}</span>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <div className="income-trend">
-        <h3>Tendencia de Ingresos</h3>
-        <div className="trend-chart">
-          {currentData.trend.map((item, index) => (
-            <div key={item.month} className="trend-point">
-              <div className="point" style={{ height: `${(item.amount / 8500000) * 100}%` }}></div>
-              <span className="point-label">{item.month}</span>
-              <span className="point-value">{formatCurrency(item.amount)}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-
-  const renderExpenseAnalysis = () => (
-    <div className="expense-analysis">
-      <div className="expense-categories">
-        <h3>Análisis por Categoría</h3>
-        <div className="categories-list">
-          {currentData.categories.map((category, index) => (
-            <div key={category.name} className="category-item">
-              <div className="category-header">
-                <span className="category-name">{category.name}</span>
-                <span className={`trend-indicator ${category.trend}`}>
-                  {category.trend === 'up' ? '↗' : category.trend === 'down' ? '↘' : '→'}
-                </span>
-              </div>
-              <div className="category-details">
-                <span className="category-amount">{formatCurrency(category.amount)}</span>
-                <span className="category-percentage">{formatPercentage(category.percentage)}</span>
-              </div>
-              <div className="category-bar">
-                <div 
-                  className="category-fill"
-                  style={{ 
-                    width: `${category.percentage}%`,
-                    background: `hsl(${index * 45}, 70%, 60%)`
-                  }}
-                ></div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-
-  const renderSavingsAnalysis = () => (
-    <div className="savings-analysis">
-      <div className="savings-overview">
-        <div className="savings-card">
-          <h3>Ahorros Actuales</h3>
-          <p className="savings-amount">{formatCurrency(currentData.total)}</p>
-          <div className="savings-progress">
-            <div className="progress-bar">
-              <div 
-                className="progress-fill"
-                style={{ width: `${currentData.percentage}%` }}
-              ></div>
-            </div>
-            <span className="progress-text">{formatPercentage(currentData.percentage)} de la meta</span>
-          </div>
-        </div>
-
-        <div className="savings-stats">
-          <div className="stat-item">
-            <span className="stat-label">Meta de Ahorro</span>
-            <span className="stat-value">{formatCurrency(currentData.goal)}</span>
-          </div>
-          <div className="stat-item">
-            <span className="stat-label">Promedio Mensual</span>
-            <span className="stat-value">{formatCurrency(currentData.monthlyAverage)}</span>
-          </div>
-        </div>
-      </div>
-
-      <div className="savings-history">
-        <h3>Historial de Ahorros</h3>
-        <div className="history-chart">
-          {currentData.history.map((item, index) => (
-            <div key={item.month} className="history-point">
-              <div className="point" style={{ height: `${(item.saved / 2300000) * 100}%` }}></div>
-              <span className="point-label">{item.month}</span>
-              <span className="point-value">{formatCurrency(item.saved)}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-
-  const renderReportContent = () => {
-    switch (selectedReport) {
-      case 'overview':
-        return renderOverview();
-      case 'income':
-        return renderIncomeAnalysis();
-      case 'expenses':
-        return renderExpenseAnalysis();
-      case 'savings':
-        return renderSavingsAnalysis();
-      default:
-        return renderOverview();
-    }
-  };
+  }, [transactions, budgets, goals, totalIncome, totalExpenses]);
 
   return (
-    <div className="reports-page">
+    <div className="reports">
       <div className="reports-header">
-        <div className="page-title">
+        <div className="reports-title">
           <h1>Reportes Financieros</h1>
-          <p>Análisis detallado de tus finanzas personales</p>
+          <p>Analiza tus finanzas con gráficos detallados y estadísticas</p>
         </div>
         
-        <div className="header-controls">
-          <div className="period-selector">
-            <label>Período:</label>
-            <select 
-              value={selectedPeriod} 
+        <div className="reports-controls">
+          <div className="control-group">
+            <label htmlFor="period-select">Período:</label>
+            <select
+              id="period-select"
+              value={selectedPeriod}
               onChange={(e) => setSelectedPeriod(e.target.value)}
+              className="control-select"
             >
               {periods.map(period => (
                 <option key={period.value} value={period.value}>
@@ -372,106 +157,90 @@ const Reports = () => {
               ))}
             </select>
           </div>
-          
-          <div className="report-selector">
-            <label>Tipo de Reporte:</label>
-            <select 
-              value={selectedReport} 
-              onChange={(e) => setSelectedReport(e.target.value)}
-            >
-              {reports.map(report => (
-                <option key={report.value} value={report.value}>
-                  {report.label}
-                </option>
-              ))}
-            </select>
+        </div>
+      </div>
+
+      {/* Métricas principales */}
+      <div className="metrics-grid">
+        <div className="metric-card">
+          <div className="metric-icon income">📈</div>
+          <div className="metric-content">
+            <h3>Ingresos Totales</h3>
+            <p className="metric-value">${totalIncome.toLocaleString()}</p>
+            <span className="metric-change positive">+5.2% vs período anterior</span>
           </div>
-          
-          <div className="export-actions">
-            <button 
-              className="btn btn-secondary"
-              onClick={() => exportTransactionsToCSV(transactions)}
-            >
-              📊 Exportar Transacciones
-            </button>
-            <button 
-              className="btn btn-secondary"
-              onClick={() => exportFinancialReport(transactions, budgets, goals)}
-            >
-              📈 Exportar Reporte General
-            </button>
+        </div>
+
+        <div className="metric-card">
+          <div className="metric-icon expense">📉</div>
+          <div className="metric-content">
+            <h3>Gastos Totales</h3>
+            <p className="metric-value">${totalExpenses.toLocaleString()}</p>
+            <span className="metric-change negative">+2.1% vs período anterior</span>
+          </div>
+        </div>
+
+        <div className="metric-card">
+          <div className="metric-icon savings">🎯</div>
+          <div className="metric-content">
+            <h3>Ahorros Totales</h3>
+            <p className="metric-value">${totalSavings.toLocaleString()}</p>
+            <span className="metric-change positive">{savingsRate.toFixed(1)}% de tasa de ahorro</span>
+          </div>
+        </div>
+
+        <div className="metric-card">
+          <div className="metric-icon balance">💰</div>
+          <div className="metric-content">
+            <h3>Balance Neto</h3>
+            <p className="metric-value">${(totalIncome - totalExpenses).toLocaleString()}</p>
+            <span className={`metric-change ${totalIncome - totalExpenses >= 0 ? 'positive' : 'negative'}`}>
+              +12.5% vs período anterior
+            </span>
           </div>
         </div>
       </div>
 
-      <div className="reports-content">
-        {renderReportContent()}
-      </div>
+      {/* Gráficos */}
+      <div className="charts-grid">
+        <div className="chart-section">
+          <h3>Tendencia de Ingresos y Gastos</h3>
+          <Chart
+            type="line"
+            data={chartData.lineData}
+            height={300}
+            title="Evolución Financiera"
+          />
+        </div>
 
-      {/* Sección de gráficos */}
-      <div className="charts-section">
-        <h2>Visualizaciones</h2>
-        
-        <div className="charts-grid">
-          <div className="chart-card">
-            <Chart
-              type="line"
-              data={formatChartData(chartData.lineData, 'line')}
-              options={generateChartOptions('line', 'Tendencia de Ingresos y Gastos')}
-              title="Tendencia Financiera"
-              height={300}
-            />
-          </div>
-          
-          <div className="chart-card">
-            <Chart
-              type="doughnut"
-              data={formatChartData(chartData.doughnutData, 'doughnut')}
-              options={generateChartOptions('doughnut', 'Distribución por Categoría')}
-              title="Gastos por Categoría"
-              height={300}
-            />
-          </div>
-          
-          <div className="chart-card">
-            <Chart
-              type="bar"
-              data={formatChartData(chartData.barData, 'bar')}
-              options={generateChartOptions('bar', 'Presupuesto vs Gastado')}
-              title="Presupuesto vs Real"
-              height={300}
-            />
-          </div>
-          
-          <div className="chart-card">
-            <div className="goals-progress-chart">
-              <h3>Progreso de Metas</h3>
-              <div className="goals-list">
-                {chartData.goalsData.map((goal, index) => (
-                  <div key={index} className="goal-progress-item">
-                    <div className="goal-info">
-                      <span className="goal-title">{goal.title}</span>
-                      <span className="goal-amount">
-                        {formatCurrency(goal.saved)} / {formatCurrency(goal.target)}
-                      </span>
-                    </div>
-                    <div className="goal-progress-bar">
-                      <div 
-                        className="goal-progress-fill"
-                        style={{ 
-                          width: `${Math.min(goal.percentage, 100)}%`,
-                          backgroundColor: goal.color
-                        }}
-                      ></div>
-                    </div>
-                    <span className="goal-percentage">
-                      {formatPercentage(goal.percentage)}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
+        <div className="chart-section">
+          <h3>Distribución por Categorías</h3>
+          <Chart
+            type="doughnut"
+            data={chartData.doughnutData}
+            height={300}
+            title="Gastos por Categoría"
+          />
+        </div>
+
+        <div className="chart-section">
+          <h3>Presupuesto vs Gastado</h3>
+          <Chart
+            type="bar"
+            data={chartData.barData}
+            height={300}
+            title="Análisis de Presupuesto"
+          />
+        </div>
+
+        <div className="chart-section">
+          <h3>Progreso de Metas</h3>
+          <Chart
+            type="bar"
+            data={chartData.goalsData}
+            height={300}
+            title="Estado de Metas Financieras"
+          />
         </div>
       </div>
     </div>

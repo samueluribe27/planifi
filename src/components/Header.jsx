@@ -7,62 +7,52 @@ import './Header.css';
 const Header = ({ searchRef }) => {
   const location = useLocation();
 
-  const isActive = (path) => {
-    return location.pathname === path;
-  };
-
   return (
     <header className="header">
       <div className="header-content">
-        {/* Sección del Logo */}
         <div className="logo">
           <Link to="/dashboard">
-            <h1>Planifi Finanzas Personales</h1>
+            <h1>🌱 Planifi</h1>
           </Link>
         </div>
         
-        {/* Sección de la Barra de Búsqueda */}
         <div className="header-search">
           <SearchBar ref={searchRef} />
         </div>
         
-        {/* Menú de Navegación */}
         <nav className="nav-menu">
           <Link 
             to="/dashboard" 
-            className={`nav-link ${isActive('/dashboard') ? 'active' : ''}`}
+            className={location.pathname === '/dashboard' ? 'active' : ''}
           >
             Dashboard
           </Link>
           <Link 
             to="/transactions" 
-            className={`nav-link ${isActive('/transactions') ? 'active' : ''}`}
+            className={location.pathname === '/transactions' ? 'active' : ''}
           >
             Transacciones
           </Link>
           <Link 
             to="/budget" 
-            className={`nav-link ${isActive('/budget') ? 'active' : ''}`}
+            className={location.pathname === '/budget' ? 'active' : ''}
           >
             Presupuesto
           </Link>
           <Link 
             to="/goals" 
-            className={`nav-link ${isActive('/goals') ? 'active' : ''}`}
+            className={location.pathname === '/goals' ? 'active' : ''}
           >
             Metas
           </Link>
         </nav>
         
-        {/* Sección de Usuario */}
-        <div className="user-section">
+        <div className="header-actions">
           <ThemeToggle />
           <div className="user-info">
-            <span className="user-name">Juan Pérez</span>
-            <span className="user-email">juan@example.com</span>
-          </div>
-          <div className="user-avatar">
-            <img src="https://via.placeholder.com/40x40/3B82F6/FFFFFF?text=JP" alt="Usuario" />
+            <span className="user-name">Usuario</span>
+            <span className="user-email">usuario@ejemplo.com</span>
+            <div className="user-avatar">👤</div>
           </div>
         </div>
       </div>

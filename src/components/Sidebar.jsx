@@ -6,84 +6,40 @@ const Sidebar = ({ isOpen, onClose }) => {
   const location = useLocation();
 
   const menuItems = [
-    {
-      path: '/',
-      label: 'Dashboard',
-      icon: '📊',
-      exact: true
-    },
-    {
-      path: '/transactions',
-      label: 'Transacciones',
-      icon: '💰'
-    },
-    {
-      path: '/budget',
-      label: 'Presupuesto',
-      icon: '📋'
-    },
-    {
-      path: '/goals',
-      label: 'Metas',
-      icon: '🎯'
-    },
-    {
-      path: '/reports',
-      label: 'Reportes',
-      icon: '📈'
-    },
-    {
-      path: '/settings',
-      label: 'Configuración',
-      icon: '⚙️'
-    }
+    { path: '/dashboard', label: 'Dashboard', icon: '📊' },
+    { path: '/transactions', label: 'Transacciones', icon: '💰' },
+    { path: '/budget', label: 'Presupuesto', icon: '📋' },
+    { path: '/goals', label: 'Metas', icon: '🎯' },
+    { path: '/reports', label: 'Reportes', icon: '📈' },
+    { path: '/settings', label: 'Configuración', icon: '⚙️' }
   ];
 
   const quickActions = [
-    {
-      label: 'Nueva Transacción',
-      icon: '➕',
-      action: () => {
-        // Navegar a transacciones
-        window.location.href = '/transactions';
-      }
-    }
+    { path: '/transactions', label: 'Nueva Transacción', icon: '➕' }
   ];
-
-  const isActive = (path, exact = false) => {
-    if (exact) {
-      return location.pathname === path;
-    }
-    return location.pathname.startsWith(path);
-  };
 
   return (
     <>
-      {/* Overlay para cerrar sidebar en móvil */}
-      {isOpen && (
-        <div 
-          className="sidebar-overlay" 
-          onClick={onClose}
-        />
-      )}
+      {/* Overlay para móviles */}
+      {isOpen && <div className="sidebar-overlay" onClick={onClose}></div>}
       
-      {/* Sidebar principal */}
       <aside className={`sidebar ${isOpen ? 'sidebar-open' : ''}`}>
-        <div className="sidebar-content">
-          {/* Encabezado del sidebar */}
-          <div className="sidebar-header">
-            <h2>Planifi Finanzas Personales</h2>
+        <div className="sidebar-header">
+          <div className="sidebar-logo">
+            <h2>🌱 Planifi</h2>
+            <p>Finanzas Personales</p>
           </div>
+        </div>
 
-          {/* Navegación principal */}
-          <nav className="sidebar-nav">
-            <h3 className="nav-section-title">Menú Principal</h3>
-            <ul className="nav-list">
+        <nav className="sidebar-nav">
+          <div className="nav-section">
+            <h3>MENÚ PRINCIPAL</h3>
+            <ul>
               {menuItems.map((item) => (
                 <li key={item.path}>
                   <Link
                     to={item.path}
-                    className={`nav-item ${isActive(item.path, item.exact) ? 'active' : ''}`}
+                    className={location.pathname === item.path ? 'active' : ''}
                     onClick={onClose}
                   >
                     <span className="nav-icon">{item.icon}</span>
@@ -92,26 +48,26 @@ const Sidebar = ({ isOpen, onClose }) => {
                 </li>
               ))}
             </ul>
-          </nav>
+          </div>
 
-          {/* Acciones rápidas */}
-          <div className="sidebar-actions">
-            <h3 className="nav-section-title">ACCIONES RÁPIDAS</h3>
-            <ul className="nav-list">
-              {quickActions.map((action, index) => (
-                <li key={index}>
-                  <button
-                    className="nav-item nav-action"
-                    onClick={action.action}
+          <div className="nav-section">
+            <h3>ACCIONES RÁPIDAS</h3>
+            <ul>
+              {quickActions.map((item) => (
+                <li key={item.path}>
+                  <Link
+                    to={item.path}
+                    className={location.pathname === item.path ? 'active' : ''}
+                    onClick={onClose}
                   >
-                    <span className="nav-icon">{action.icon}</span>
-                    <span className="nav-label">{action.label}</span>
-                  </button>
+                    <span className="nav-icon">{item.icon}</span>
+                    <span className="nav-label">{item.label}</span>
+                  </Link>
                 </li>
               ))}
             </ul>
           </div>
-        </div>
+        </nav>
       </aside>
     </>
   );
