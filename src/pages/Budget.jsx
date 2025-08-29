@@ -1,52 +1,10 @@
 import React, { useState } from 'react';
+import { useAppContext } from '../context/AppContext';
 import { formatCurrency, formatPercentage, getCategoryIcon } from '../utils/formatters';
 import './Budget.css';
 
 const Budget = () => {
-  const [budgets, setBudgets] = useState([
-    {
-      id: 1,
-      category: 'Alimentación',
-      budget: 800000,
-      spent: 650000,
-      icon: '🛒'
-    },
-    {
-      id: 2,
-      category: 'Transporte',
-      budget: 300000,
-      spent: 280000,
-      icon: '🚗'
-    },
-    {
-      id: 3,
-      category: 'Entretenimiento',
-      budget: 200000,
-      spent: 150000,
-      icon: '🎮'
-    },
-    {
-      id: 4,
-      category: 'Vivienda',
-      budget: 1200000,
-      spent: 1200000,
-      icon: '🏠'
-    },
-    {
-      id: 5,
-      category: 'Salud',
-      budget: 150000,
-      spent: 80000,
-      icon: '🏥'
-    },
-    {
-      id: 6,
-      category: 'Educación',
-      budget: 500000,
-      spent: 300000,
-      icon: '📚'
-    }
-  ]);
+  const { budgets, addBudget, deleteBudget, categories } = useAppContext();
 
   const [showAddForm, setShowAddForm] = useState(false);
   const [newBudget, setNewBudget] = useState({
@@ -55,28 +13,24 @@ const Budget = () => {
     spent: 0
   });
 
-  const categories = [
-    'Trabajo', 'Alimentación', 'Transporte', 'Entretenimiento', 
-    'Salud', 'Educación', 'Vivienda', 'Servicios', 'Ropa', 
-    'Viajes', 'Inversiones', 'Otros'
-  ];
 
-  const totalBudget = budgets.reduce((sum, budget) => sum + budget.budget, 0);
+
+  const totalBudget = budgets.reduce((sum, budget) => sum + budget.limit, 0);
   const totalSpent = budgets.reduce((sum, budget) => sum + budget.spent, 0);
   const totalRemaining = totalBudget - totalSpent;
-  const overallProgress = (totalSpent / totalBudget) * 100;
+  const overallProgress = totalBudget > 0 ? (totalSpent / totalBudget) * 100 : 0;
 
   const handleAddBudget = (e) => {
     e.preventDefault();
     const budget = {
-      id: Date.now(),
       ...newBudget,
-      budget: parseFloat(newBudget.budget),
-      spent: parseFloat(newBudget.spent),
-      icon: getCategoryIcon(newBudget.category)
+      limit: parseFloat(newBudget.budget),
+      spent: parseFloat(newBudget.spent) || 0,
+      icon: getCategoryIcon(newBudget.category),
+      color: '#3B82F6'
     };
     
-    setBudgets([...budgets, budget]);
+    addBudget(budget);
     setNewBudget({
       category: '',
       budget: '',
@@ -86,7 +40,7 @@ const Budget = () => {
   };
 
   const handleDeleteBudget = (id) => {
-    setBudgets(budgets.filter(b => b.id !== id));
+    deleteBudget(id);
   };
 
   const getProgressColor = (percentage) => {
@@ -179,7 +133,7 @@ const Budget = () => {
                 <div className="budget-amounts">
                   <div className="amount-row">
                     <span>Presupuesto:</span>
-                    <span>{formatCurrency(budget.budget)}</span>
+                    <span>{formatCurrency(budget.limit)}</span>
                   </div>
                   <div className="amount-row">
                     <span>Gastado:</span>
@@ -196,7 +150,7 @@ const Budget = () => {
                 <div className="budget-progress">
                   <div className="progress-info">
                     <span>{formatPercentage(percentage)}</span>
-                    <span>{formatCurrency(budget.spent)} / {formatCurrency(budget.budget)}</span>
+                    <span>{formatCurrency(budget.spent)} / {formatCurrency(budget.limit)}</span>
                   </div>
                   <div className="progress-bar">
                     <div 
@@ -235,7 +189,7 @@ const Budget = () => {
                 >
                   <option value="">Selecciona una categoría</option>
                   {categories.map(category => (
-                    <option key={category} value={category}>{category}</option>
+                    <option key={category.name} value={category.name}>{category.name}</option>
                   ))}
                 </select>
               </div>
